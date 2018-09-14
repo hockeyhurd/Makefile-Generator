@@ -54,6 +54,7 @@ b32 containsArrayList(const ArrayList *, void *, CompareFunc);
 void addArrayList(ArrayList *, const void *);
 void removeArrayList(ArrayList *, const u32);
 void removeLastArrayList(ArrayList *);
+void clearArrayList(ArrayList *);
 
 void constructArrayListIterator(ArrayListIterator *, const ArrayList *);
 void desetructArrayListIterator(ArrayListIterator *);

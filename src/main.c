@@ -39,7 +39,7 @@ static void pause(void) {
 #endif
 }
 
-#define TEST 0
+#define TEST 1
 
 typedef ArrayListIterator Iter;
 
@@ -67,7 +67,7 @@ s32 main(s32 argc, char **argv) {
 	constructArrayList(&filter.descriptor, 0x10, sizeof(u32));
 
 	for (u32 i = 0; i <= 10; i += 2) {
-		addArrayList(&filter.descriptor, (const void *) i);
+		addArrayList(&filter.descriptor, (const void *) (pint) i);
 	}
 
 	u32 input[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -117,6 +117,24 @@ s32 main(s32 argc, char **argv) {
     closeFile(&file);
 
     desrtuctString(&file.path);
+
+    Dir dir;
+    constructString(&dir.path, "../MakefileGenerator/src/.");
+
+    openDir(&dir);
+    readDir(&dir);
+
+    ArrayListIterator iter;
+    constructArrayListIterator(&iter, &dir.branches);
+
+    while (hasNextArrayListIterator(&iter)) {
+        String *fileName = nextArrayListIterator(&iter);
+        printf("%s\n", fileName->cstr);
+    }
+
+    closeDir(&dir);
+
+    desrtuctString(&dir.path);
 
     END:;
 #elif 0

@@ -140,7 +140,7 @@ b32 openDir(Dir *dir) {
 	if (dir == NULL || dir->op == EDIR_OP_VALID)
 		return False;
 
-	dir->dir = opendir(dir->path.cstr);
+	dir->dir = (struct DIR *) opendir(dir->path.cstr);
 
 	if (dir->dir == NULL) {
 		fprintf(stderr, "Error openning directory: '%s'!\n", dir->path.cstr);
@@ -152,7 +152,7 @@ b32 openDir(Dir *dir) {
 
 void closeDir(Dir *dir) {
 	if (dir != NULL && dir->dir != NULL && dir->op == EDIR_OP_VALID) {
-		closedir(dir->dir);
+		closedir((DIR *) dir->dir);
 		dir->dir = NULL;
 		dir->op = EDIR_OP_INVALID;
 	}
@@ -167,7 +167,7 @@ u32 getFilesAndSubdirectories(const Dir *dir, const ArrayList *list) {
 
 	struct dirent *entry;
 
-	while ((entry = readdir(dir->dir)) != NULL) {
+	while ((entry = readdir((DIR *) dir->dir)) != NULL) {
 		String *currentFile = (String *) myMalloc(sizeof(String), "Construct file/dir name");
 		constructString(currentFile, entry->d_name);
 
