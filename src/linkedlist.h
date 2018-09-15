@@ -30,10 +30,15 @@ typedef struct LinkedListIter {
     LLNode *current;
 } LinkedListIter;
 
+typedef s32 (*CmpFunc)(void *, void *);
+
 void constructLinkedList(LinkedList *);
 void destructLinkedList(LinkedList *);
 
 void addLinkedList(LinkedList *, void *);
+b32 removeLinkedList(LinkedList *, void *, CmpFunc);
+
+LinkedListIter containsLinkedList(const LinkedList *, void *, CmpFunc);
 
 void clearLinkedList(LinkedList *);
 

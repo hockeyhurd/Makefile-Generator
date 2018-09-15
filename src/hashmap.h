@@ -10,11 +10,20 @@
 #ifndef MAKEFILEGENERATOR_HASHMAP_H
 #define MAKEFILEGENERATOR_HASHMAP_H
 
-#include "types.h"
+#include "linkedlist.h"
 
 typedef struct HashMap {
-    void *block;
+    LinkedList *list;
+    u32 numBuckets;
+    f32 loadFactor;
     pint len;
 } HashMap;
+
+typedef pint (*HashFunc)(void *);
+
+void constructHashMap(HashMap *, const u32, const f32);
+void destructHashMap(HashMap *);
+
+void putHashMap(HashMap *, void *, void *, HashFunc);
 
 #endif //MAKEFILEGENERATOR_HASHMAP_H

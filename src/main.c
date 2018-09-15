@@ -59,6 +59,13 @@ static s32 intCompare(void *left, void *right) {
 	return leftInt - rightInt;
 }
 
+static s32 pintCompare(void *leftPtr, void *rightPtr) {
+    pint left = *(pint *) &leftPtr;
+    pint right = *(pint *) &rightPtr;
+
+    return left < right ? -1 : left > right ? 1 : 0;
+}
+
 s32 main(s32 argc, char **argv) {
 #if 1
 
@@ -118,6 +125,13 @@ s32 main(s32 argc, char **argv) {
     }
 
 #endif
+
+    removeLinkedList(&list, (pint *) 0x10, pintCompare);
+    removeLinkedList(&list, (pint *) 0x10, pintCompare);
+    removeLinkedList(&list, (pint *) 0x40, pintCompare);
+    removeLinkedList(&list, (pint *) 0x20, pintCompare);
+    removeLinkedList(&list, (pint *) 0x30, pintCompare);
+    removeLinkedList(&list, (pint *) 0x10, pintCompare);
 
     destructLinkedListIter(&iter);
 

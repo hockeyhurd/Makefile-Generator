@@ -8,6 +8,7 @@
 #include "linkedlist.h"
 
 static LLNode *createNode(void *, LLNode *, LLNode *);
+static void deleteNode(LLNode **);
 
 LLNode *createNode(void *value, LLNode *next, LLNode *prev) {
     LLNode *node = (LLNode *) myMalloc(sizeof(LLNode), "malloc LLNode");
@@ -17,6 +18,13 @@ LLNode *createNode(void *value, LLNode *next, LLNode *prev) {
     node->prev = prev;
 
     return node;
+}
+
+void deleteNode(LLNode **node) {
+    (*node)->value = NULL;
+    (*node)->next = (*node)->prev = NULL;
+    myFree(*node, "Free LLNode");
+    *node = NULL;
 }
 
 void constructLinkedList(LinkedList *list) {
@@ -45,6 +53,70 @@ void addLinkedList(LinkedList *list, void *value) {
     }
 
     list->len++;
+}
+
+b32 removeLinkedList(LinkedList *list, void *valueToFind, CmpFunc func) {
+    if (list == NULL || list->len == 0)
+        return False;
+
+    LinkedListIter findResult = containsLinkedList(list, valueToFind, func);
+
+    if (findResult.current == NULL)
+        return False;
+    else if (list->len == 1) {
+        list->head = list->tail = NULL;
+
+        deleteNode(&findResult.current);
+        list->len--;
+        return True;
+    }
+
+    if (findResult.current == list->head) {
+        list->head = list->head->next;
+        list->head->prev = NULL;
+    }
+
+    else if (findResult.current == list->tail) {
+        list->tail = list->tail->prev;
+        list->tail->next = NULL;
+    }
+
+    // Somewhere in between.
+    else {
+        LLNode *prev = findResult.current->prev;
+        LLNode *next = findResult.current->next;
+
+        prev->next = next;
+        next->prev = prev;
+    }
+
+    deleteNode(&findResult.current);
+
+    // Check len after removal and fix ends as needed!
+
+    list->len--;
+
+    return True;
+}
+
+LinkedListIter containsLinkedList(const LinkedList *list, void *valueToFind, CmpFunc func) {
+    LinkedListIter iter;
+    constructLinkedListIter(&iter, list, True);
+
+    while (hasNextLinkedListIter(&iter)) {
+        // void *value = nextLinkedListIter(&iter);
+        void *value = iter.current->value;
+
+        if (func(value, valueToFind) == 0) {
+            return iter;
+        }
+
+        nextLinkedListIter(&iter);
+    }
+
+    destructLinkedListIter(&iter);
+
+    return iter;
 }
 
 void clearLinkedList(LinkedList *list) {
