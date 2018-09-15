@@ -26,6 +26,7 @@
 #include "maker.h"
 #include "filesystem.h"
 #include "filter.h"
+#include "linkedlist.h"
 
 #ifdef WIN32
 #include <vld.h>
@@ -82,6 +83,45 @@ s32 main(s32 argc, char **argv) {
 	}
 
 	destructArrayList(&filter.descriptor);
+
+#elif 0
+
+	LinkedList list;
+	constructLinkedList(&list);
+
+	addLinkedList(&list, (pint *) 0x10);
+    addLinkedList(&list, (pint *) 0x20);
+    addLinkedList(&list, (pint *) 0x30);
+    addLinkedList(&list, (pint *) 0x40);
+
+    LinkedListIter iter;
+
+#if 1
+    constructLinkedListIter(&iter, &list, True);
+
+    while (hasNextLinkedListIter(&iter)) {
+        void *valAsPtr = nextLinkedListIter(&iter);
+        const pint value = *(pint *) &valAsPtr;
+
+        printf("Value: %lu\n", value);
+    }
+
+#else
+
+    constructLinkedListIter(&iter, &list, False);
+
+    while (hasPrevLinkedListIter(&iter)) {
+        void *valAsPtr = prevLinkedListIter(&iter);
+        const pint value = *(pint *) &valAsPtr;
+
+        printf("Value: %lu\n", value);
+    }
+
+#endif
+
+    destructLinkedListIter(&iter);
+
+    destructLinkedList(&list);
 
 #elif TEST
     // for (s32 i = 1; i < argc; i++)
