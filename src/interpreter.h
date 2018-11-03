@@ -27,6 +27,9 @@
 #ifndef MAKEGEN_INTERPRETER_H
 #define MAKEGEN_INTERPRETER_H
 
+#include <vector>
+#include <string>
+
 #include "source.h"
 #include "arraylist.h"
 
@@ -43,8 +46,8 @@ typedef struct IFlags {
     flag_t wall;
     flag_t stdver;
     flag_t cmode;
-    String outputName;
-    ArrayList flags;
+    std::string outputName;
+    std::vector<std::string> flags;
 } IFlags;
 
 void initIFlags(IFlags *);
@@ -63,6 +66,6 @@ void freeIFlags(IFlags *);
 *  @return Unsigned 32-bit int count of number of source files.  If any pointer is
 *       NULL, the function will return 0.
 */
-u32 interpretArgs(const u32, char **, ArrayList *, IFlags *);
+pint interpretArgs(const u32, char **, std::vector<SourceFile> &, IFlags *);
 
 #endif //MAKEGEN_INTERPRETER_H

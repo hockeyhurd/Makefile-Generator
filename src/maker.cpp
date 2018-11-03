@@ -22,29 +22,47 @@
 * SOFTWARE.
 */
 
-#include "maker.h"
+#include <cstdio>
 
-#include <stdio.h>
+#include "maker.h"
+#include "string.h"
 
 typedef ArrayListIterator Iter;
 
 void myFree(void *, const char *);
 
 static void writeString(const String *, const FILE *);
+static void writeString(const std::string &, const FILE *);
 static void writeCString(const char *, const FILE *);
 static void writeChar(const char, const FILE *);
-static void writeActualFileName(const SourceFile *, const FILE *);
+static void writeActualFileName(const SourceFile &, const FILE *);
 
-static void writeMakefileHeaderVars(SRC *, const IFlags *, const FILE *);
-static b32 writeMakefileOptimizationLevel(SRC *, const OptLevel, const b32, const FILE *);
-static void writeMakefileModules(const SRC *, const IFlags *, const FILE *);
+static void writeMakefileHeaderVars(SRC &, IFlags &, const FILE *);
+static b32 writeMakefileOptimizationLevel(SRC &, const OptLevel, const b32, const FILE *);
+static void writeMakefileModules(const SRC *, IFlags &, const FILE *);
 
 // static void compileFlagsToString(String *, const IFlags *);
 static b32 isValidSTDVersion(const b32, const u32);
 
+SRC::SRC(std::string fileName, std::string flags, std::vector<SourceFile> &sourceFiles) : fileName(std::move(fileName)),
+    flags(std::move(flags)), sourceFiles(sourceFiles) {
+
+}
+
+SRC::SRC(std::string fileName, std::vector<SourceFile> &sourceFiles) : fileName(fileName),
+    flags(""), sourceFiles(sourceFiles) {
+
+}
+
 void writeString(const String *word, const FILE *file) {
     for (u32 i = 0; i < word->len - 1; i++)
         putc(word->cstr[i], (FILE *) file);
+}
+
+void writeString(const std::string &word, const FILE *file) {
+    for (auto c : word) {
+        putc(c, (FILE *) file);
+    }
 }
 
 void writeCString(const char *word, const FILE *file) {
@@ -56,21 +74,29 @@ void writeChar(const char c, const FILE *file) {
     putc((char) c, (FILE *) file);
 }
 
-void writeActualFileName(const SourceFile *file, const FILE *makefile) {
-    char *c = NULL;
+void writeActualFileName(const SourceFile &file, const FILE *makefile) {
+    /*char *c = NULL;
 
     for (c = file->fileName.cstr; *c != '.'; c++) {
         writeChar(*c, makefile);
+    }*/
+
+    for (auto c : file.fileName) {
+        if (c == '.')
+            break;
+
+        writeChar(c, makefile);
     }
 
     // if (*c == '.')
         // writeChar(++c, makefile);
 }
 
-void writeMakefileHeaderVars(SRC *source, const IFlags *flags, const FILE *makefile) {
-    constructString(&source->flags, "");
+void writeMakefileHeaderVars(SRC &source, IFlags &flags, const FILE *makefile) {
+    // constructString(&source->flags, "");
+    source.flags = "";
 
-    if (flags->cmode == 1)
+    if (flags.cmode == 1)
         writeCString("CC = gcc\n", makefile);
     else
         writeCString("CC = g++\n", makefile);
@@ -79,7 +105,7 @@ void writeMakefileHeaderVars(SRC *source, const IFlags *flags, const FILE *makef
 
     b32 needsSpace = False;
     
-    if (flags->flags.len) {
+    if (flags.flags.size()) {
         // Below is removed as it should be un-neccessary.
 #if 0
         if (needsSpace)
@@ -89,102 +115,121 @@ void writeMakefileHeaderVars(SRC *source, const IFlags *flags, const FILE *makef
             needsSpace = False;
 #endif
 
-        for (u32 i = 0; i < flags->flags.len; i++) {
+        /*for (u32 i = 0; i < flags->flags.len; i++) {
             String *string = getArrayList(&flags->flags, i);
             writeString(string, makefile);
             writeChar(' ', makefile);
             // myFree(string, "ArrayList Flag String");
+        }*/
+
+        for (auto &flag : flags.flags) {
+            writeString(flag, makefile);
+            writeChar(' ', makefile);
         }
     }
 
-    needsSpace = writeMakefileOptimizationLevel(source, flags->optLevel, needsSpace, makefile);
+    needsSpace = writeMakefileOptimizationLevel(source, flags.optLevel, needsSpace, makefile);
 
-    if (flags->wall != INTERPRETER_INVALID_FLAG) {
+    if (flags.wall != INTERPRETER_INVALID_FLAG) {
         if (needsSpace) {
             writeCString(" -Wall", makefile);
-            appendCString(&source->flags, " -Wall");
+            // appendCString(&source->flags, " -Wall");
+            source.flags += " -Wall";
         }
 
         else {
             needsSpace = True;
             writeCString("-Wall", makefile);
-            appendCString(&source->flags, "-Wall");
+            // appendCString(&source->flags, "-Wall");
+            source.flags += "-Wall";
         }
     }
 
-    if (flags->stdver != INTERPRETER_INVALID_FLAG) {
-        String stdver;
+    if (flags.stdver != INTERPRETER_INVALID_FLAG) {
+        std::string stdver = std::to_string(flags.stdver);
 
-        if (toString(&stdver, (s32) flags->stdver)) {
+        // if (toString(&stdver, (s32) flags.stdver)) {
+        if (stdver.size() > 0) {
 
-            if (!isValidSTDVersion(flags->cmode, flags->stdver)) {
+            if (!isValidSTDVersion(flags.cmode, flags.stdver)) {
                 perror("Invalid stdver! Please check your input!\n");
                 
-                if (flags->cmode)
-                    ((IFlags *) flags)->stdver = DEFAULT_C_STD;
+                if (flags.cmode)
+                    flags.stdver = (flag_t) DEFAULT_C_STD;
                 else
-                    ((IFlags *)flags)->stdver = DEFAULT_CPP_STD;
+                    flags.stdver = (flag_t) DEFAULT_CPP_STD;
 
-                toString(&stdver, (s32) flags->stdver);
+                // toString(&stdver, (s32) flags->stdver);
+                stdver = std::to_string(flags.stdver);
             }
 
             if (needsSpace) {
                 writeCString(" -std=", makefile);
-                appendCString(&source->flags, " -std=");
+                // appendCString(&source->flags, " -std=");
+                source.flags += " -std=";
             }
 
             else {
                 needsSpace = True;
                 writeCString("-std=", makefile);
-                appendCString(&source->flags, "-std=");
+                // appendCString(&source->flags, "-std=");
+                source.flags += "-std=";
             }
 
-            if (flags->cmode) {
+            if (flags.cmode) {
                 writeCString("c", makefile);
-                appendCString(&source->flags, "c");
+                // appendCString(&source->flags, "c");
+                source.flags = "c";
             }
 
             else {
                 writeCString("c++", makefile);
-                appendCString(&source->flags, "c++");
+                // appendCString(&source->flags, "c++");
+                source.flags += "c++";
             }
 
-            writeString(&stdver, makefile);
-            appendCString(&source->flags, stdver.cstr);
+            writeString(stdver, makefile);
+            // appendCString(&source.flags, stdver.c_str());
+            source.flags += stdver;
 
-            desrtuctString(&stdver);
+            // desrtuctString(&stdver);
         }
     }
 }
 
-b32 writeMakefileOptimizationLevel(SRC *source, const OptLevel level, const b32 needsSpace, const FILE *makefile) {
+b32 writeMakefileOptimizationLevel(SRC &source, const OptLevel level, const b32 needsSpace, const FILE *makefile) {
     if (needsSpace)
         writeChar(' ', makefile);
     
     switch (level) {
     case OPT_DEBUG:
         writeCString("-g", makefile);
-        appendCString(&source->flags, "-g");
+        // appendCString(&source->flags, "-g");
+        source.flags += "-g";
         break;
 
     case OPT_OFF:
         writeCString("-O0", makefile);
-        appendCString(&source->flags, "-O0");
+        // appendCString(&source->flags, "-O0");
+        source.flags += "-O0";
         break;
 
     case OPT_LOW:
         writeCString("-O1", makefile);
-        appendCString(&source->flags, "-O1");
+        // appendCString(&source->flags, "-O1");
+            source.flags += "-O1";
         break;
 
     case OPT_MED:
         writeCString("-O2", makefile);
-        appendCString(&source->flags, "-O2");
+        // appendCString(&source->flags, "-O2");
+        source.flags += "-O2";
         break;
 
     case OPT_HIGH:
         writeCString("-O3", makefile);
-        appendCString(&source->flags, "-O3");
+        // appendCString(&source->flags, "-O3");
+        source.flags += "-O3";
         break;
 
     default:
@@ -197,7 +242,7 @@ b32 writeMakefileOptimizationLevel(SRC *source, const OptLevel level, const b32 
 void writeMakefileModules(const SRC *source, const IFlags *flags, const FILE *makefile) {
     writeCString("all: link ", makefile);
 
-    Iter iter;
+    /*Iter iter;
     constructArrayListIterator(&iter, source->sourceFiles);
 
     while (hasNextArrayListIterator(&iter)) {
@@ -206,6 +251,13 @@ void writeMakefileModules(const SRC *source, const IFlags *flags, const FILE *ma
         if (file->fileType == SOURCE) {
             writeActualFileName(file, makefile);
             writeCString(".o ", makefile);
+        }
+    }*/
+
+    for (auto &file : source->sourceFiles) {
+        if (file.fileType == FileType::SOURCE) {
+            writeActualFileName(file, makefile);
+            writeString(".o ", makefile);
         }
     }
 

@@ -27,6 +27,9 @@
 #ifndef MAKEGEN_MAKER_H
 #define MAKEGEN_MAKER_H
 
+#include <vector>
+#include <string>
+
 #include "source.h"
 #include "interpreter.h"
 
@@ -39,12 +42,17 @@
 #define DEFAULT_CPP_STD 98u
 
 typedef struct SRC {
-    String fileName;
-    String flags;
+    std::string fileName;
+    std::string flags;
     // u32 stdver;
     // b32 cmode;
-    ArrayList *sourceFiles;
+    std::vector<SourceFile> &sourceFiles;
+
+    SRC(std::string, std::string, std::vector<SourceFile> &);
+    SRC(std::string, std::vector<SourceFile> &);
 } SRC;
+
+
 
 void constructSources(SRC *, const char *, const ArrayList *);
 void destructSources(SRC *);
