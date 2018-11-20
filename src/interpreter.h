@@ -50,8 +50,8 @@ typedef struct IFlags {
     std::vector<std::string> flags;
 } IFlags;
 
-void initIFlags(IFlags *);
-void freeIFlags(IFlags *);
+void initIFlags(IFlags &);
+void freeIFlags(IFlags &);
 
 /**
 *  Interprets command line arguments into gcc style compilation
@@ -66,6 +66,6 @@ void freeIFlags(IFlags *);
 *  @return Unsigned 32-bit int count of number of source files.  If any pointer is
 *       NULL, the function will return 0.
 */
-pint interpretArgs(const u32, char **, std::vector<SourceFile> &, IFlags *);
+pint interpretArgs(const u32, char **, std::vector<SourceFile> &, IFlags &);
 
 #endif //MAKEGEN_INTERPRETER_H

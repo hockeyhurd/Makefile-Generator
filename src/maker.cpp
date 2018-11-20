@@ -39,7 +39,7 @@ static void writeActualFileName(const SourceFile &, const FILE *);
 
 static void writeMakefileHeaderVars(SRC &, IFlags &, const FILE *);
 static b32 writeMakefileOptimizationLevel(SRC &, const OptLevel, const b32, const FILE *);
-static void writeMakefileModules(const SRC *, IFlags &, const FILE *);
+static void writeMakefileModules(SRC &, IFlags &, const FILE *);
 
 // static void compileFlagsToString(String *, const IFlags *);
 static b32 isValidSTDVersion(const b32, const u32);
@@ -239,7 +239,7 @@ b32 writeMakefileOptimizationLevel(SRC &source, const OptLevel level, const b32 
     return True;
 }
 
-void writeMakefileModules(const SRC *source, const IFlags *flags, const FILE *makefile) {
+void writeMakefileModules(SRC &source, IFlags &flags, const FILE *makefile) {
     writeCString("all: link ", makefile);
 
     /*Iter iter;
@@ -254,7 +254,7 @@ void writeMakefileModules(const SRC *source, const IFlags *flags, const FILE *ma
         }
     }*/
 
-    for (auto &file : source->sourceFiles) {
+    for (auto &file : source.sourceFiles) {
         if (file.fileType == FileType::SOURCE) {
             writeActualFileName(file, makefile);
             writeString(".o ", makefile);
@@ -264,15 +264,12 @@ void writeMakefileModules(const SRC *source, const IFlags *flags, const FILE *ma
     writeChar('\n', makefile);
     writeChar('\n', makefile);
 
-    constructArrayListIterator(&iter, source->sourceFiles);
-
-    while (hasNextArrayListIterator(&iter)) {
-        SourceFile *file = nextArrayListIterator(&iter);
-
-        if (file->fileType == SOURCE) {
+    // while (hasNextArrayListIterator(&iter)) {
+    for (SourceFile &file : source.sourceFiles) {
+        if (file.fileType == SOURCE) {
             writeActualFileName(file, makefile);
             writeCString(".o: ", makefile);
-            writeString(&file->fileName, makefile);
+            writeString(file.fileName, makefile);
             writeChar('\n', makefile);
 
             writeChar('\t', makefile);
@@ -281,18 +278,16 @@ void writeMakefileModules(const SRC *source, const IFlags *flags, const FILE *ma
             // writeString(&source->flags, makefile);
             writeCString(CC_FLAGS_VAR, makefile);
             writeCString(" -c ", makefile);
-            writeString(&file->fileName, makefile);
+            writeString(file.fileName, makefile);
             writeChar('\n', makefile);
         }
     }
 
     writeCString("link: ", makefile);
-    constructArrayListIterator(&iter, source->sourceFiles);
 
-    while (hasNextArrayListIterator(&iter)) {
-        SourceFile *file = nextArrayListIterator(&iter);
-
-        if (file->fileType == SOURCE) {
+    // while (hasNextArrayListIterator(&iter)) {
+    for (SourceFile &file : source.sourceFiles) {
+        if (file.fileType == SOURCE) {
             writeActualFileName(file, makefile);
             writeCString(".o ", makefile);
         }
@@ -304,18 +299,15 @@ void writeMakefileModules(const SRC *source, const IFlags *flags, const FILE *ma
     writeCString(CC_FLAGS_VAR, makefile);
     writeChar(' ', makefile);
 
-    if (flags->outputName.cstr != NULL && flags->outputName.len) {
+    if (flags.outputName.size() > 0) {
         writeCString("-o ", makefile);
-        writeString(&flags->outputName, makefile);
+        writeString(flags.outputName, makefile);
         writeChar(' ', makefile);
     }
 
-    constructArrayListIterator(&iter, source->sourceFiles);
-
-    while (hasNextArrayListIterator(&iter)) {
-        SourceFile *file = nextArrayListIterator(&iter);
-
-        if (file->fileType == SOURCE) {
+    // while (hasNextArrayListIterator(&iter)) {
+    for (SourceFile &file : source.sourceFiles) {
+        if (file.fileType == SOURCE) {
             writeActualFileName(file, makefile);
             writeCString(".o ", makefile);
         }
@@ -323,9 +315,9 @@ void writeMakefileModules(const SRC *source, const IFlags *flags, const FILE *ma
 
     writeCString("\nclean:\n\trm -f *.o", makefile);
 
-    if (flags->outputName.cstr != NULL && flags->outputName.len) {
+    if (flags.outputName.size() > 0) {
         writeChar(' ', makefile);
-        writeString(&flags->outputName, makefile);
+        writeString(flags.outputName, makefile);
     }
 }
 
@@ -363,42 +355,19 @@ b32 isValidSTDVersion(const b32 cmode, const u32 version) {
     return False;
 }
 
-void constructSources(SRC *src, const char *fileName, const ArrayList *sourceFiles) {
-    constructString(&src->fileName, fileName);
-    src->flags.cstr = NULL;
-    src->flags.len = 0;
-    // src->stdver = 0x80000000;
-    // src->cmode = 0x80000000;
-    src->sourceFiles = (ArrayList *) sourceFiles;
-}
-
-void destructSources(SRC *src) {
-    if (src->fileName.cstr != NULL && src->fileName.len)
-        desrtuctString(&src->fileName);
-    if (src->flags.cstr != NULL && src->flags.len)
-        desrtuctString(&src->flags);
-
-    // src->stdver = 0x80000000;
-    // src->cmode = 0x80000000;
-    src->sourceFiles = NULL;
-}
-
-void addSourceFile(const SRC *src, const SourceFile *sourceFile) {
-    addArrayList(src->sourceFiles, sourceFile);
-}
-
-b32 writeToFile(const SRC *source, const IFlags *flags) {
-    if (flags->cmode == INTERPRETER_INVALID_FLAG) {
+b32 writeToFile(SRC &source, IFlags &flags) {
+    if (flags.cmode == INTERPRETER_INVALID_FLAG) {
         perror("Could not determine \"C-Mode\"!  Assuming mode 'C++'\n");
-        ((IFlags *) flags)->cmode = 0;
+        // ((IFlags *) flags)->cmode = 0;
+        flags.cmode = 0;
     }
 
-    FILE *outputFile = fopen(source->fileName.cstr, "w");
+    FILE *outputFile = fopen(source.fileName.c_str(), "w");
 
-    if (outputFile == NULL) {
+    if (outputFile == nullptr) {
         fclose(outputFile);
         perror("Error writing file: ");
-        perror(source->fileName.cstr);
+        perror(source.fileName.c_str());
         perror("\n");
         // exit(-1);
         return False;
@@ -407,7 +376,7 @@ b32 writeToFile(const SRC *source, const IFlags *flags) {
     // compileFlagsToString(source->flags, flags);
 
     // writeCString("Hello makefile!\nThis is a test!", outputFile);
-    writeMakefileHeaderVars((SRC *) source, flags, outputFile);
+    writeMakefileHeaderVars(source, flags, outputFile);
     writeChar('\n', outputFile);
     writeMakefileModules(source, flags, outputFile);
 

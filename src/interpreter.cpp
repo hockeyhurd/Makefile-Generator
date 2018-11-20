@@ -38,7 +38,6 @@ static const char *flagNameCheck = "-name=";
 static const u32 flagNameCheckLen = 6;
 static const u32 flagVerCheckLen = 6;
 // static SourceFile fileBuf[0x100];
-static u32 bufIndex = 0;
 
 static void cleanupAllocs(ArrayList *);
 static b32 decodeIFlag(const std::string &, IFlags *);
@@ -181,39 +180,26 @@ void loadDefaultEnvironment(std::vector<SourceFile> &sourceFiles, IFlags &flags)
     flags.flags.emplace_back("-pipe");
 }
 
-void initIFlags(IFlags *flags) {
-    flags->optLevel = OPT_INVALID;
-    flags->wall = INTERPRETER_INVALID_FLAG;
-    flags->stdver = INTERPRETER_INVALID_FLAG;
-    flags->cmode = INTERPRETER_INVALID_FLAG;
-    flags->outputName.cstr = NULL;
-    flags->outputName.len = 0;
-    
-    constructArrayList(&flags->flags, 0x10, sizeof(String *));
+void initIFlags(IFlags &flags) {
+    flags.optLevel = OPT_INVALID;
+    flags.wall = INTERPRETER_INVALID_FLAG;
+    flags.stdver = INTERPRETER_INVALID_FLAG;
+    flags.cmode = INTERPRETER_INVALID_FLAG;
+    flags.outputName = "";
+
+    flags.flags.reserve(0x10);
 }
 
-void freeIFlags(IFlags *flags) {
-    flags->optLevel = OPT_INVALID;
-    flags->wall = INTERPRETER_INVALID_FLAG;
-    flags->stdver = INTERPRETER_INVALID_FLAG;
-    flags->cmode = INTERPRETER_INVALID_FLAG;
+void freeIFlags(IFlags &flags) {
+    flags.optLevel = OPT_INVALID;
+    flags.wall = INTERPRETER_INVALID_FLAG;
+    flags.stdver = INTERPRETER_INVALID_FLAG;
+    flags.cmode = INTERPRETER_INVALID_FLAG;
 
-    if (flags->outputName.cstr != NULL && flags->outputName.len)
-        desrtuctString(&flags->outputName);
-
-    if (flags->flags.len) {
-        for (s64 i = flags->flags.len - 1; i >= 0; i--) {
-            String *string = (String *) getArrayList(&flags->flags, (const u32) i);
-            desrtuctString(string);
-            myFree(string, "Free flag from ArrayList");
-            removeLastArrayList(&flags->flags);
-        }
-    }
-
-    destructArrayList(&flags->flags);
+    flags.flags.clear();
 }
 
-pint interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceFiles, IFlags *flags) {
+pint interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceFiles, IFlags &flags) {
     if (argc <= 1 || argv == nullptr)
         return 0;
 
@@ -228,7 +214,7 @@ pint interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceF
 
     // constructArrayList(sourceFiles, 0x10, sizeof(SourceFile));
 
-    if (argv[1] ==  "--example") {
+    if (!strcmp(argv[1], "--example")) {
         loadDefaultEnvironment(sourceFiles, flags);
         return sourceFiles.size();
     }
@@ -238,7 +224,7 @@ pint interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceF
 
         // Is argument.
         if (arg[0] == '-') {
-            if (!decodeIFlag(&arg, flags)) {
+            if (!decodeIFlag(arg, flags)) {
                 perror("Error parsing flag: ");
                 perror(arg.c_str());
                 perror("\n");
@@ -264,9 +250,9 @@ pint interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceF
                 sourceFiles.push_back(std::move(file));
 
                 if (!cmode)
-                    flags->cmode = 0;
-                else if (flags->cmode == INTERPRETER_INVALID_FLAG)
-                    flags->cmode = static_cast<flag_t>(cmode);
+                    flags.cmode = 0;
+                else if (flags.cmode == INTERPRETER_INVALID_FLAG)
+                    flags.cmode = static_cast<flag_t>(cmode);
             }
         }
     }

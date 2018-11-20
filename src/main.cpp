@@ -27,7 +27,6 @@
 #include "interpreter.h"
 #include "maker.h"
 #include "filesystem.h"
-#include "filter.h"
 #include "linkedlist.h"
 #include "arraylist.h"
 
@@ -213,12 +212,12 @@ s32 main(s32 argc, char **argv) {
 
 #else
     IFlags flags;
-    initIFlags(&flags);
+    initIFlags(flags);
 
     // ArrayList *sourceFiles = interpretArgs(argc, argv, &flags);
     std::vector<SourceFile> sourceFiles;
 
-    if (!interpretArgs(argc, argv, sourceFiles, &flags)) {
+    if (!interpretArgs(argc, argv, sourceFiles, flags)) {
         printf("Error collecting source flags...\n");
     }
 
@@ -226,7 +225,7 @@ s32 main(s32 argc, char **argv) {
         printf("Collecting source files success!!\n");
 
         u32 fileNum = 0;
-        Iter iter;
+        // Iter iter;
 
 #if 0
         constructArrayListIterator(&iter, &sourceFiles);
@@ -245,7 +244,7 @@ s32 main(s32 argc, char **argv) {
         SRC source("makefile", sourceFiles);
         // constructSources(&source, "makefile", &sourceFiles);
 
-        writeToFile(&source, &flags);
+        writeToFile(source, flags);
 
         /*constructArrayListIterator(&iter, &sourceFiles);
         while (hasNextArrayListIterator(&iter)) {
@@ -259,7 +258,7 @@ s32 main(s32 argc, char **argv) {
         // destructSources(&source);
     }
 
-    freeIFlags(&flags);
+    freeIFlags(flags);
 #endif
     pause();
     return 0;

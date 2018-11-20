@@ -52,12 +52,6 @@ typedef struct SRC {
     SRC(std::string, std::vector<SourceFile> &);
 } SRC;
 
-
-
-void constructSources(SRC *, const char *, const ArrayList *);
-void destructSources(SRC *);
-void addSourceFile(const SRC *, const SourceFile *);
-
-b32 writeToFile(const SRC *, const IFlags *);
+b32 writeToFile(SRC &, IFlags &);
 
 #endif //MAKEGEN_MAKER_H
