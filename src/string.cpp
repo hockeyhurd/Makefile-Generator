@@ -28,8 +28,10 @@
 
 extern void myFree(void *, const char *);
 
+#if 0
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 b32 isNum(const char c) {
@@ -103,6 +105,18 @@ b32 stringStartsWith(const String *string, const String *ref) {
     return True;
 }
 
+b32 startsWith(const std::string &string, const std::string &ref) {
+	if (string.size() < ref.size() && ref.size() > 1)
+		return False;
+
+	for (pint i = 0; i < ref.size(); i++) {
+		if (string[i] != ref[i])
+			return False;
+	}
+
+	return True;
+}
+
 b32 containsString(const String *string, const String *find) {
     if (string == NULL || find == NULL || string->len < find->len)
         return False;
@@ -141,6 +155,26 @@ b32 parseUInt(const String *string, u32 *output) {
     return True;
 }
 
+b32 parseUInt(const std::string &string, u32 &output) {
+	if (!string.size())
+		return False;
+
+	u32 buffer = 0;
+
+	u32 power = 1;
+	for (s32 i = string.size() - 2; i >= 0; i--) {
+		if (!isNum(string[i]))
+			return False;
+
+		buffer += charToNum(string[i]) * power;
+		power *= 10;
+	}
+
+	output = buffer;
+
+	return True;
+}
+
 b32 parseInt(const String *string, s32 *output) {
 	if (string == NULL || string->cstr == NULL || !string->len || output == NULL)
 		return False;
@@ -164,6 +198,33 @@ b32 parseInt(const String *string, s32 *output) {
 		return False;
 
 	*output = buffer;
+
+	return True;
+}
+
+b32 parseInt(const std::string &string, s32 &output) {
+	if (!string.size())
+		return False;
+
+	s32 buffer = 0;
+	u32 power = 1;
+
+	for (s32 i = string.size() - 2; i >= 1; i--) {
+		if (!isNum(string[i]))
+			return False;
+
+		buffer += charToNum(string[i]) * power;
+		power *= 10;
+	}
+
+	if (string[0] == '-')
+		buffer = -buffer;
+	else if (isNum(string[0]))
+		buffer += charToNum(string[0] * power);
+	else if (string[0] != '+')
+		return False;
+
+	output = buffer;
 
 	return True;
 }
@@ -292,6 +353,8 @@ void appendCString(String *string, const char *cstr) {
     }
 }
 
+#if 0
 #ifdef __cplusplus
 }
+#endif
 #endif

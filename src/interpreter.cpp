@@ -24,7 +24,6 @@
 
 #include "interpreter.h"
 #include "string.h"
-#include <cstring>
 
 #ifndef DEFAULT_C_STD
 #define DEFAULT_C_STD 99u
@@ -39,152 +38,54 @@ static const char *flagNameCheck = "-name=";
 static const u32 flagNameCheckLen = 6;
 static const u32 flagVerCheckLen = 6;
 // static SourceFile fileBuf[0x100];
+static u32 bufIndex = 0;
 
-// b32 decodeIFlag(const std::string &, IFlags *);
+// static void cleanupAllocs(ArrayList *);
+static b32 decodeIFlag(const String *, IFlags *);
 
-static void loadDefaultEnvironment(std::vector<SourceFile> &, IFlags &);
+static void loadDefaultEnvironment(std::vector<SourceFile> &, IFlags *);
 
-IFlags::IFlags(const OutputType outputType, std::string &&outputName) : outputType(outputType), outputName(outputName), optLevel(OPT_INVALID), wall(INTERPRETER_INVALID_FLAG),
-    wextra(INTERPRETER_INVALID_FLAG), werror(INTERPRETER_INVALID_FLAG), stdver(INTERPRETER_INVALID_FLAG),
-    cmode(INTERPRETER_INVALID_FLAG) {
-
-    flags.reserve(0x10);
-}
-
-b32 IFlags::decode(const std::string &arg) {
-    std::string temp = "-l";
-
-    if (arg == "-Wall")
-        wall = 1;
-    else if (arg == "-Wextra")
-        wextra = 1;
-    else if (arg == "-Werror")
-        werror = 1;
-    else if (arg == "-g")
-        optLevel = OptLevel::OPT_DEBUG;
-    else if (arg == "-O0")
-        optLevel = OptLevel::OPT_OFF;
-    else if (arg == "-O1")
-        optLevel = OptLevel::OPT_LOW;
-    else if (arg == "-O2")
-        optLevel = OptLevel::OPT_MED;
-    else if (arg == "-O3")
-        optLevel = OptLevel::OPT_HIGH;
-    else if (arg == "-pipe") {
-        flags.emplace_back("-pipe");
-    }
-
-    else if (arg == "-pthread") {
-        flags.emplace_back("-pthread");
-    }
-
-    else if (arg == "-exe") {
-        if (outputType == OutputType::EMPTY)
-            outputType = OutputType::EXE;
-        else
-            return False;
-    }
-
-    else if (arg == "-static") {
-        if (outputType == OutputType::EMPTY)
-            outputType = OutputType::STATIC;
-        else
-            return False;
-    }
-
-    else if (arg == "-shared") {
-        if (outputType == OutputType::EMPTY)
-            outputType = OutputType::SHARED;
-        else
-            return False;
-    }
-
-        // Below needs to be verified as incorrect! (Temp deprecated!).
 #if 0
-        else if (!stringCompare(arg->cstr, "-gtest")) {
-        String *gtest = (String *) myMalloc(sizeof(String), "Malloc -gtest flag");
-        constructString(gtest, "-gtest");
-
-        addArrayList(&flags->flags, gtest);
-    }
+void cleanupAllocs(ArrayList *list) {
+    destructArrayList(list);
+    // free(*list);
+    myFree(list, "Allocs");
+    // *list = NULL;
+}
 #endif
 
-    else if (arg[0] == temp[0] && arg[1] == temp[1]) {
-        // String *link = (String *) myMalloc(sizeof(String), "Malloc -l flag");
-        // constructString(link, arg->cstr);
-
-        // addArrayList(&flags->flags, link);
-        flags.emplace_back(arg);
-    }
-
-        // Could be "-name=<insert name here>"
-    else if (arg.size() >= flagNameCheckLen) {
-        for (u32 i = 0; i < flagNameCheckLen; i++) {
-            if (arg[i] != flagNameCheck[i]) {
-                goto CHECK;
-                return False;
-            }
-        }
-
-        // Valid name, set appropriate flags.
-        // constructString(&flags->outputName, arg->cstr + 6);
-        outputName = arg.c_str() + 6;
-    }
-
-        // -std=c11, -std=c++11
-        // Check for stdver:
-    else if (arg.size() == 9 || arg.size() == 11) {
-        CHECK:;
-        u32 i;
-        for (i = 0; i < flagVerCheckLen; i++) {
-            if (arg[i] != flagVerCheck[i])
-                return False;
-        }
-
-        if (arg.size() == 11) {
-            if (arg[i++] != '+' || arg[i++] != '+')
-                return False;
-        }
-
-        // flags->stdver
-        String temp;
-        temp.cstr = (char *) &arg.c_str()[i];
-        temp.len = stringLength(temp.cstr);
-
-        u32 output = 0;
-
-        parseUInt(&temp, &output);
-        stdver = (flag_t) (output & 0xff);
-    }
-
-    else
-        return False;
-
-    return True;
-}
-
-#if 0
-b32 decodeIFlag(const std::string &arg, IFlags &flags) {
-    std::string temp = "-l";
+b32 decodeIFlag(const std::string &arg, IFlags *flags) {
+    // temp.cstr = "-l";
+    // temp.len = stringLength(temp.cstr);
 
     if (arg == "-Wall")
-        flags.wall = 1;
+        flags->wall = 1;
     else if (arg == "-g")
-        flags.optLevel = OptLevel::OPT_DEBUG;
+        flags->optLevel = OPT_DEBUG;
     else if (arg == "-O0")
-        flags.optLevel = OptLevel::OPT_OFF;
+        flags->optLevel = OPT_OFF;
     else if (arg == "-O1")
-        flags.optLevel = OptLevel::OPT_LOW;
+        flags->optLevel = OPT_LOW;
     else if (arg == "-O2")
-        flags.optLevel = OptLevel::OPT_MED;
+        flags->optLevel = OPT_MED;
     else if (arg == "-O3")
-        flags.optLevel = OptLevel::OPT_HIGH;
+        flags->optLevel = OPT_HIGH;
     else if (arg == "-pipe") {
-        flags.flags.emplace_back("-pipe");
+        /*String *pipe = (String *) myMalloc(sizeof(String), "Malloc -pipe flag");
+        constructString(pipe, "-pipe");
+
+        addArrayList(&flags->flags, pipe);*/
+
+		flags->flags.emplace_back("-pipe");
     }
 
     else if (arg == "-pthread") {
-        flags.flags.emplace_back("-pthread");
+        // String *pThread = (String *) myMalloc(sizeof(String), "Malloc -pthread flag");
+        // constructString(pThread, "-pthread");
+
+        // addArrayList(&flags->flags, pThread);
+
+		flags->flags.emplace_back("-pthread");
     }
 
     // Below needs to be verified as incorrect! (Temp deprecated!).
@@ -197,12 +98,12 @@ b32 decodeIFlag(const std::string &arg, IFlags &flags) {
     }
 #endif
 
-    else if (arg[0] == temp[0] && arg[1] == temp[1]) {
+    else if (startsWith(arg, "-l")) {
         // String *link = (String *) myMalloc(sizeof(String), "Malloc -l flag");
         // constructString(link, arg->cstr);
 
         // addArrayList(&flags->flags, link);
-        flags.flags.emplace_back(arg);
+		flags->flags.push_back(arg);
     }
 
     // Could be "-name=<insert name here>"
@@ -216,7 +117,7 @@ b32 decodeIFlag(const std::string &arg, IFlags &flags) {
 
         // Valid name, set appropriate flags.
         // constructString(&flags->outputName, arg->cstr + 6);
-        flags.outputName = arg.c_str() + 6;
+		flags->outputName = arg.c_str() + 6;
     }
 
     // -std=c11, -std=c++11
@@ -235,14 +136,15 @@ b32 decodeIFlag(const std::string &arg, IFlags &flags) {
         }
 
         // flags->stdver
-        String temp;
-        temp.cstr = (char *) &arg.c_str()[i];
-        temp.len = stringLength(temp.cstr);
+        // String temp;
+        // temp.cstr = (char *) &arg->cstr[i];
+        // temp.len = stringLength(temp.cstr);
+		std::string temp = (char *) &arg[i];
 
         u32 output = 0;
 
-        parseUInt(&temp, &output);
-        flags.stdver = (flag_t) (output & 0xff);
+        parseUInt(temp, output);
+        flags->stdver = (flag_t) (output & 0xff);
     }
 
     else
@@ -250,65 +152,85 @@ b32 decodeIFlag(const std::string &arg, IFlags &flags) {
 
     return True;
 }
-#endif
 
-void loadDefaultEnvironment(std::vector<SourceFile> &sourceFiles, IFlags &flags) {
+void loadDefaultEnvironment(std::vector<SourceFile> &sourceFiles, IFlags *flags) {
     /*
     *   -pipe -pthread -gtest -g -Wall -std=c11 -name=makegen main.c arraylist.c 
     *   interpreter.c maker.c source.c string.c types.c
     */
 
-    // SourceFile *mainFile = &fileBuf[bufIndex++];
-    // SourceFile *exFile = &fileBuf[bufIndex++];
+#if 0
+    SourceFile *mainFile = &fileBuf[bufIndex++];
+    SourceFile *exFile = &fileBuf[bufIndex++];
 
-    // constructString(&mainFile->fileName, "main.c");
-    // constructString(&exFile->fileName, "ex.c");
+    constructString(&mainFile->fileName, "main.c");
+    constructString(&exFile->fileName, "ex.c");
 
-    // mainFile->fileType = SOURCE;
-    // exFile->fileType = SOURCE;
+    mainFile->fileType = SOURCE;
+    exFile->fileType = SOURCE;
 
-    // addArrayList(sourceFiles, mainFile);
-    // addArrayList(sourceFiles, exFile);
-    sourceFiles.emplace_back("main.c", FileType::SOURCE);
-    sourceFiles.emplace_back("ex.c", FileType::SOURCE);
+    addArrayList(sourceFiles, mainFile);
+    addArrayList(sourceFiles, exFile);
 
-    flags.optLevel = OPT_DEBUG;
-    flags.wall = 1;
-    flags.stdver = DEFAULT_C_STD;
-    flags.cmode = True;
-    // constructString(&flags->outputName, "main");
-    flags.outputName = "main";
+    flags->optLevel = OPT_DEBUG;
+    flags->wall = 1;
+    flags->stdver = DEFAULT_C_STD;
+    flags->cmode = True;
+    constructString(&flags->outputName, "main");
 
-    // String *pipe = (String *) myMalloc(sizeof(String), "Malloc -pipe flag");
-    // constructString(pipe, "-pipe");
+    String *pipe = (String *) myMalloc(sizeof(String), "Malloc -pipe flag");
+    constructString(pipe, "-pipe");
 
-    // addArrayList(&flags->flags, pipe);
-    flags.flags.emplace_back("-pipe");
+    addArrayList(&flags->flags, pipe);
+#else
+	sourceFiles.emplace_back("main.c", SOURCE);
+	sourceFiles.emplace_back("ex.c", SOURCE);
+
+	flags->optLevel = OPT_DEBUG;
+	flags->wall = 1;
+	flags->stdver = DEFAULT_C_STD;
+	flags->cmode = True;
+	flags->outputName = "main";
+	flags->flags.emplace_back("-pipe");
+#endif
 }
+
+void initIFlags(IFlags *flags) {
+    flags->optLevel = OPT_INVALID;
+    flags->wall = INTERPRETER_INVALID_FLAG;
+    flags->stdver = INTERPRETER_INVALID_FLAG;
+    flags->cmode = INTERPRETER_INVALID_FLAG;
+	flags->outputName = "";
+    
+    // constructArrayList(&flags->flags, 0x10, sizeof(String *));
+	flags->flags.reserve(0x10);
+}
+
+void freeIFlags(IFlags *flags) {
+    flags->optLevel = OPT_INVALID;
+    flags->wall = INTERPRETER_INVALID_FLAG;
+    flags->stdver = INTERPRETER_INVALID_FLAG;
+    flags->cmode = INTERPRETER_INVALID_FLAG;
+
+	/*if (flags->outputName.cstr != NULL && flags->outputName.size() > 0)
+        desrtuctString(&flags->outputName);*/
 
 #if 0
-void initIFlags(IFlags &flags) {
-    flags.optLevel = OPT_INVALID;
-    flags.wall = INTERPRETER_INVALID_FLAG;
-    flags.stdver = INTERPRETER_INVALID_FLAG;
-    flags.cmode = INTERPRETER_INVALID_FLAG;
-    flags.outputName = "";
+    if (flags->flags.size()) {
+        for (s64 i = flags->flags.len - 1; i >= 0; i--) {
+            String *string = (String *) getArrayList(&flags->flags, (const u32) i);
+            desrtuctString(string);
+            myFree(string, "Free flag from ArrayList");
+            removeLastArrayList(&flags->flags);
+        }
+    }
 
-    flags.flags.reserve(0x10);
-}
-
-void freeIFlags(IFlags &flags) {
-    flags.optLevel = OPT_INVALID;
-    flags.wall = INTERPRETER_INVALID_FLAG;
-    flags.stdver = INTERPRETER_INVALID_FLAG;
-    flags.cmode = INTERPRETER_INVALID_FLAG;
-
-    flags.flags.clear();
-}
+    destructArrayList(&flags->flags);
 #endif
+}
 
-size_t interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceFiles, IFlags &flags) {
-    if (argc <= 1 || argv == nullptr)
+u32 interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceFiles, IFlags *flags) {
+    if (argc <= 1 || argv == NULL)
         return 0;
 
     /*ArrayList *sourceFiles = (ArrayList *) malloc(sizeof(ArrayList));
@@ -321,18 +243,21 @@ size_t interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourc
     }*/
 
     // constructArrayList(sourceFiles, 0x10, sizeof(SourceFile));
+	flags->flags.reserve(0x10);
 
-    if (!strcmp(argv[1], "--example")) {
+    if (!stringCompare(argv[1], "--example")) {
         loadDefaultEnvironment(sourceFiles, flags);
         return sourceFiles.size();
     }
 
     for (u32 i = 1; i < argc; i++) {
         std::string arg = argv[i];
+        // arg.cstr = argv[i];
+        // arg.len = stringLength(arg.cstr);
 
         // Is argument.
         if (arg[0] == '-') {
-            if (!flags.decode(arg)) {
+            if (!decodeIFlag(arg, flags)) {
                 perror("Error parsing flag: ");
                 perror(arg.c_str());
                 perror("\n");
@@ -343,9 +268,7 @@ size_t interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourc
 
         // Else check if a valid source file.
         else {
-            // SourceFile *file = &fileBuf[bufIndex++];
-            // file->fileName = arg;
-            SourceFile file(arg);
+			SourceFile file(arg);
             b32 cmode = True;
 
             if (isValidSourceFile(file, cmode)) {
@@ -355,19 +278,14 @@ size_t interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourc
 
                 // Add to source file list.
                 // addArrayList(sourceFiles, file);
-                sourceFiles.push_back(std::move(file));
+				sourceFiles.emplace_back(file);
 
                 if (!cmode)
-                    flags.cmode = 0;
-                else if (flags.cmode == INTERPRETER_INVALID_FLAG)
-                    flags.cmode = static_cast<flag_t>(cmode);
+                    flags->cmode = 0;
+                else if (flags->cmode == INTERPRETER_INVALID_FLAG)
+                    flags->cmode = cmode;
             }
         }
-    }
-
-    // Make sure the output type is known.
-    if (flags.outputType == OutputType::EMPTY) {
-        flags.outputType = OutputType::EXE;
     }
 
     return sourceFiles.size();
