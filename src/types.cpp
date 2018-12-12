@@ -24,10 +24,12 @@
 
 #include "types.h"
 
-#include <assert.h>
+#include <cassert>
 
+#if 0
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 u32 myPow(const u32 base, const u32 power) {
@@ -81,6 +83,8 @@ void copyBytes(char *src, char *dest, const u32 srcOffset, const u32 destOffset,
 	}
 }
 
+#if 0
 #ifdef __cplusplus
 }
+#endif
 #endif

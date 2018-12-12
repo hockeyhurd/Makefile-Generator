@@ -22,6 +22,8 @@
 * SOFTWARE.
 */
 
+#include <iostream>
+
 #include "interpreter.h"
 #include "maker.h"
 #include "filesystem.h"
@@ -40,7 +42,7 @@ static void pause(void) {
 #endif
 }
 
-#define TEST 1
+#define TEST 0
 
 typedef ArrayListIterator Iter;
 
@@ -67,7 +69,7 @@ static s32 pintCompare(void *leftPtr, void *rightPtr) {
 }
 
 s32 main(s32 argc, char **argv) {
-#if 1
+#if 0
 
 	FilterList filter;
 	filter.whiteListMode = True;
@@ -213,9 +215,10 @@ s32 main(s32 argc, char **argv) {
     initIFlags(&flags);
 
     // ArrayList *sourceFiles = interpretArgs(argc, argv, &flags);
-    ArrayList sourceFiles;
+    // ArrayList sourceFiles;
+	std::vector<SourceFile> sourceFiles;
 
-    if (!interpretArgs(argc, argv, &sourceFiles, &flags)) {
+    if (!interpretArgs(argc, argv, sourceFiles, &flags)) {
         printf("Error collecting source flags...\n");
     }
 
@@ -223,23 +226,31 @@ s32 main(s32 argc, char **argv) {
         printf("Collecting source files success!!\n");
 
         u32 fileNum = 0;
-        Iter iter;
 
-#if 1
+#if 0
         constructArrayListIterator(&iter, &sourceFiles);
         printf("Files:\n");
         while (hasNextArrayListIterator(&iter)) {
             SourceFile *sourceFile = (SourceFile *) nextArrayListIterator(&iter);
-            printf("\t[%u]: %s\n", ++fileNum, sourceFile->fileName.cstr);
+            printf("\t[%u]: %s\n", ++fileNum, sourceFile->fileName);
             // free(sourceFile->fileName.cstr);
         }
+#elif 1
+		puts("Files:\n");
+
+		for (auto &sourceFile : sourceFiles) {
+			printf("\t[%u]: %s\n", ++fileNum, sourceFile.fileName.c_str());
+		}
 #endif
 
-        SRC source;
-        constructSources(&source, "makefile", &sourceFiles);
+        // SRC source;
+        // constructSources(&source, "makefile", &sourceFiles);
 
-        writeToFile(&source, &flags);
+        // writeToFile(&source, &flags);
 
+		Source source("makefile", "", sourceFiles);
+
+#if 0
         constructArrayListIterator(&iter, &sourceFiles);
         while (hasNextArrayListIterator(&iter)) {
             SourceFile *sourceFile = (SourceFile *) nextArrayListIterator(&iter);
@@ -247,9 +258,10 @@ s32 main(s32 argc, char **argv) {
             // free(sourceFile->fileName.cstr);
             myFree(sourceFile->fileName.cstr, "SourceFile's String");
         }
+#endif
 
-        destructArrayList(&sourceFiles);
-        destructSources(&source);
+        // destructArrayList(&sourceFiles);
+        // destructSources(&source);
     }
 
     freeIFlags(&flags);

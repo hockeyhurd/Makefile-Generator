@@ -28,47 +28,55 @@
 #define MIN_FILE_LEN 4u
 #endif
 
-b32 isValidSourceFile(SourceFile *file, b32 *cmode) {
-    if (file->fileName.len < MIN_FILE_LEN)
+#ifdef __cplusplus
+	SourceFile::SourceFile(std::string fileName, const FileType fileType) : fileName(std::move(fileName)), fileType(fileType) {
+
+	}
+#endif
+
+b32 isValidSourceFile(SourceFile &file, b32 &cmode) {
+    if (file.fileName.size() < MIN_FILE_LEN)
         return False;
 
-    char *subString = NULL;
+    // char *subString = NULL;
+	std::string subString;
 
-    for (s32 i = file->fileName.len - 1; i >= 0; i--) {
-        if (file->fileName.cstr[i] == '.' && i + 1 < (s32) file->fileName.len) {
-            subString = &file->fileName.cstr[i + 1];
+    for (s32 i = file.fileName.size() - 1; i >= 0; i--) {
+        if (file.fileName[i] == '.' && i + 1 < (s32) file.fileName.size()) {
+            subString = &file.fileName[i + 1];
             break;
         }
     }
 
-    if (subString == NULL)
+    if (subString.size() == 0)
         return False;
 
-    if (!stringCompare(subString, "h")) {
-        file->fileType = HEADER;
+    // if (!stringCompare(subString, "h")) {
+	if (subString == "h") {
+        file.fileType = HEADER;
     }
 
-    else if (!stringCompare(subString, "hpp")) {
-        file->fileType = HEADER;
-        *cmode = False;
+    else if (subString == "hpp") {
+        file.fileType = HEADER;
+        cmode = False;
     }
 
-    else if (!stringCompare(subString, "hxx")) {
-        file->fileType = HEADER;
-        *cmode = False;
+    else if (subString == "hxx") {
+        file.fileType = HEADER;
+        cmode = False;
     }
 
-    else if (!stringCompare(subString, "c"))
-        file->fileType = SOURCE;
+    else if (subString == "c")
+        file.fileType = SOURCE;
 
-    else if (!stringCompare(subString, "cpp")) {
-        file->fileType = SOURCE;
-        *cmode = False;
+    else if (subString == "cpp") {
+        file.fileType = SOURCE;
+        cmode = False;
     }
 
-    else if (!stringCompare(subString, "cxx")) {
-        file->fileType = SOURCE;
-        *cmode = False;
+    else if (subString == "cxx") {
+        file.fileType = SOURCE;
+        cmode = False;
     }
 
     else
