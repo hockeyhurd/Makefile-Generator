@@ -38,18 +38,48 @@
 #define DEFAULT_C_STD 99u
 #define DEFAULT_CPP_STD 98u
 
-typedef struct SRC {
-    String fileName;
-    String flags;
-    // u32 stdver;
-    // b32 cmode;
-    ArrayList *sourceFiles;
-} SRC;
+class Source {
 
-void constructSources(SRC *, const char *, const ArrayList *);
+private:
+
+	std::string fileName;
+	std::string flags;
+	std::vector<SourceFile> sourceFiles;
+
+public:
+
+	Source(std::string, std::string, std::vector<SourceFile> = std::vector<SourceFile>());
+	Source(const Source &);
+	Source(Source &&);
+	~Source() = default;
+
+	Source &operator= (const Source &);
+	Source &operator= (Source &&);
+
+	void add(const SourceFile &);
+	b32 writeToFile(const IFlags &);
+
+private:
+
+	void writeMakefileHeaderVars(IFlags &, const FILE *);
+	b32 writeMakefileOptimizationLevel(const OptLevel, const b32, const FILE *);
+	void writeMakefileModules(IFlags &, const FILE *);
+
+	static void writeString(const std::string &, const FILE *);
+	static void writeChar(const char, const FILE *);
+	static void writeCString(const char *, const FILE *);
+	static void writeActualFileName(const SourceFile &, const FILE *);
+
+	static b32 isValidSTDVersion(const b32, const u32);
+
+};
+
+#if USE_C_SRC
+void constructSources(SRC *, std::string, std::vector<SourceFile> *);
 void destructSources(SRC *);
-void addSourceFile(const SRC *, const SourceFile *);
+void addSourceFile(const SRC *, const SourceFile &);
 
 b32 writeToFile(const SRC *, const IFlags *);
+#endif
 
 #endif //MAKEGEN_MAKER_H

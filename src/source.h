@@ -27,17 +27,24 @@
 #ifndef MAKEGEN_SOURCE_H
 #define MAKEGEN_SOURCE_H
 
-#include "string.h"
+// #include "string.h"
+#include "types.h"
+
+#include <string>
 
 typedef enum FileType {
     INVALID = 0, HEADER = 1, SOURCE = 2, LEN = 3
 } FileType;
 
 typedef struct SourceFile {
-    String fileName;
+    std::string fileName;
     FileType fileType;
+
+#ifdef __cplusplus
+	SourceFile(std::string, const FileType = INVALID);
+#endif
 } SourceFile;
 
-b32 isValidSourceFile(SourceFile *, b32 *);
+b32 isValidSourceFile(SourceFile &, b32 &);
 
 #endif //MAKEGEN_SOURCE_H

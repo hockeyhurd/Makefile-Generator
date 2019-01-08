@@ -29,7 +29,7 @@ extern void myFree(void *, const char *);
 
 void resizeArray(ArrayList *list) {
     const u32 newCapacity = list->capacity << 1;
-    void **newArr = calloc(list->capacity, list->sizeOf);
+    void **newArr = (void **) calloc(list->capacity, list->sizeOf);
 
     for (u32 i = 0; i < list->capacity; i++) {
         newArr[i] = list->arr[i];
@@ -43,7 +43,7 @@ void resizeArray(ArrayList *list) {
 }
 
 void constructArrayList(ArrayList *list, const u32 capacity, const u32 sizeOf) {
-    list->arr = calloc(capacity, sizeOf);
+    list->arr = (void **) calloc(capacity, sizeOf);
 
     if (list->arr == NULL) {
         perror("Error Calloc'ing!\n");

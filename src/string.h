@@ -29,8 +29,12 @@
 
 #include "types.h"
 
+#include <string>
+
+#if 0
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 typedef struct String {
@@ -62,8 +66,14 @@ void moveString(String *, String *);
 
 void appendCString(String *src, const char *);
 
+#if 0
 #ifdef __cplusplus
 }
 #endif
+#endif
+
+b32 startsWith(const std::string &, const std::string &);
+b32 parseUInt(const std::string &, u32 &);
+b32 parseInt(const std::string &, s32 &);
 
 #endif // !STRING_H

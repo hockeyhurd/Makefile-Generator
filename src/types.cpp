@@ -24,6 +24,7 @@
 
 #include "types.h"
 
+#include <cstdio>
 #include <cassert>
 
 #if 0

@@ -60,7 +60,7 @@ u32 hashString(const char *str) {
 }
 
 u32 stringLength(const char *cstr) {
-    if (cstr == NULL)
+    if (cstr == nullptr)
         return 0;
 
     u32 count = 0;
@@ -71,11 +71,11 @@ u32 stringLength(const char *cstr) {
 }
 
 s32 stringCompare(const char *left, const char *right) {
-    if (left == NULL && right == NULL)
+    if (left == nullptr && right == nullptr)
         return 0;
-    else if (left != NULL && right == NULL)
+    else if (left != nullptr && right == nullptr)
         return 1;
-    else if (left == NULL && right != NULL)
+    else if (left == nullptr && right != nullptr)
         return -1;
 
     u32 i;
@@ -92,7 +92,7 @@ s32 stringCompare(const char *left, const char *right) {
 }
 
 b32 stringStartsWith(const String *string, const String *ref) {
-    if ((string == NULL || ref == NULL || string->len < ref->len) && ref->len > 1)
+    if ((string == nullptr || ref == nullptr || string->len < ref->len) && ref->len > 1)
         return False;
 
     for (u32 i = 0; i < ref->len - 1; i++) {
@@ -116,7 +116,7 @@ b32 startsWith(const std::string &string, const std::string &ref) {
 }
 
 b32 containsString(const String *string, const String *find) {
-    if (string == NULL || find == NULL || string->len < find->len)
+    if (string == nullptr || find == nullptr || string->len < find->len)
         return False;
 
     u32 index = 0;
@@ -134,7 +134,7 @@ b32 containsString(const String *string, const String *find) {
 }
 
 b32 parseUInt(const String *string, u32 *output) {
-    if (string == NULL || string->cstr == NULL || !string->len || output == NULL)
+    if (string == nullptr || string->cstr == nullptr || !string->len || output == nullptr)
         return False;
 
 	u32 buffer = 0;
@@ -174,7 +174,7 @@ b32 parseUInt(const std::string &string, u32 &output) {
 }
 
 b32 parseInt(const String *string, s32 *output) {
-	if (string == NULL || string->cstr == NULL || !string->len || output == NULL)
+	if (string == nullptr || string->cstr == nullptr || !string->len || output == nullptr)
 		return False;
 
 	s32 buffer = 0;
@@ -228,7 +228,7 @@ b32 parseInt(const std::string &string, s32 &output) {
 }
 
 b32 toString(String *string, const s32 val) {
-    if (string == NULL)
+    if (string == nullptr)
         return False;
 
     s32 copy = val;
@@ -272,7 +272,7 @@ b32 toString(String *string, const s32 val) {
 }
 
 void constructString(String *string, const char *cstr) {
-    if (string != NULL && cstr != NULL) {
+    if (string != nullptr && cstr != nullptr) {
         string->len = stringLength(cstr);
         string->cstr = (char *) calloc(string->len, sizeof(char));
 
@@ -283,23 +283,23 @@ void constructString(String *string, const char *cstr) {
 }
 
 void desrtuctString(String *string) {
-    if (string != NULL && string->len) {
+    if (string != nullptr && string->len) {
         // free(string->cstr);
         myFree(string->cstr, "String");
-        string->cstr = NULL;
+        string->cstr = nullptr;
         string->len = 0;
     }
 }
 
 void copyCString(String *string, const char *cstr) {
-    if (string != NULL && cstr != NULL) {
+    if (string != nullptr && cstr != nullptr) {
         string->cstr = (char *) cstr;
         string->len = stringLength(cstr);
     }
 }
 
 void copyString(String *string, const String *src) {
-    if (string != NULL && src != NULL) {
+    if (string != nullptr && src != nullptr) {
         string->cstr = src->cstr;
         string->len = src->len;
     }
@@ -307,7 +307,7 @@ void copyString(String *string, const String *src) {
 
 void moveString(String *dest, String *src) {
     dest->cstr = src->cstr;
-    src->cstr = NULL;
+    src->cstr = nullptr;
     dest->len = src->len;
     src->len = 0;
 }
@@ -315,13 +315,13 @@ void moveString(String *dest, String *src) {
 void appendCString(String *string, const char *cstr) {
     u32 len = 0;
 
-    if (string != NULL && cstr != NULL && (len = stringLength(cstr))) {
-        if (string->cstr == NULL && !string->len)
+    if (string != nullptr && cstr != nullptr && (len = stringLength(cstr))) {
+        if (string->cstr == nullptr && !string->len)
             copyCString(string, cstr);
         else {
             char *newStr = (char *) calloc(string->len + len - 1, sizeof(char));
 
-            if (newStr == NULL) {
+            if (newStr == nullptr) {
                 // free(newStr);
                 myFree(newStr, "Free'ing failed allocation");
                 perror("Error allocating block of memory during string append!\n");

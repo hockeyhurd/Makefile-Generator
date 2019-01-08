@@ -27,9 +27,8 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdint>
+#include <cstdlib>
 
 #ifdef __APPLE__
 #define OS_APPLE 1
@@ -57,8 +56,10 @@
 #define global_status static
 #endif
 
+#if 0
 #ifndef internal
 #define internal static
+#endif
 #endif
 
 typedef uint8_t u8;
@@ -87,8 +88,10 @@ typedef s32(*CompareFunc)(void *, void *);
 #define True (b32) 1u
 #endif
 
+#if 0
 #ifdef __cplusplus
 extern "C" {
+#endif
 #endif
 
 u32 myPow(const u32, const u32);
@@ -98,8 +101,10 @@ void myFree(void *, const char *);
 
 void copyBytes(char *, char *, const u32, const u32, const u32);
 
+#if 0
 #ifdef __cplusplus
 }
+#endif
 #endif
 
 #endif
