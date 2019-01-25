@@ -103,7 +103,7 @@ void writeMakefileHeaderVars(SRC &source, IFlags &flags, const FILE *makefile) {
 
     b32 needsSpace = False;
     
-    if (flags.flags.size()) {
+    if (!flags.flags.empty()) {
         // Below is removed as it should be un-neccessary.
 #if 0
         if (needsSpace)
@@ -131,15 +131,39 @@ void writeMakefileHeaderVars(SRC &source, IFlags &flags, const FILE *makefile) {
     if (flags.wall != INTERPRETER_INVALID_FLAG) {
         if (needsSpace) {
             writeCString(" -Wall", makefile);
-            // appendCString(&source->flags, " -Wall");
             source.flags += " -Wall";
         }
 
         else {
             needsSpace = True;
             writeCString("-Wall", makefile);
-            // appendCString(&source->flags, "-Wall");
             source.flags += "-Wall";
+        }
+    }
+
+    if (flags.wextra != INTERPRETER_INVALID_FLAG) {
+        if (needsSpace) {
+            writeCString(" -Wextra", makefile);
+            source.flags += " -Wextra";
+        }
+
+        else {
+            needsSpace = True;
+            writeCString("-Wextra", makefile);
+            source.flags += "-Wextra";
+        }
+    }
+
+    if (flags.werror != INTERPRETER_INVALID_FLAG) {
+        if (needsSpace) {
+            writeCString(" -Werror", makefile);
+            source.flags += " -Werror";
+        }
+
+        else {
+            needsSpace = True;
+            writeCString("-Werror", makefile);
+            source.flags += "-Werror";
         }
     }
 
@@ -147,7 +171,7 @@ void writeMakefileHeaderVars(SRC &source, IFlags &flags, const FILE *makefile) {
         std::string stdver = std::to_string(flags.stdver);
 
         // if (toString(&stdver, (s32) flags.stdver)) {
-        if (stdver.size() > 0) {
+        if (!stdver.empty()) {
 
             if (!isValidSTDVersion(flags.cmode, flags.stdver)) {
                 perror("Invalid stdver! Please check your input!\n");

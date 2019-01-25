@@ -65,7 +65,7 @@ void *myMalloc(const u32 size, const char *tag) {
 }
 
 void myFree(void *ptr, const char *tag) {
-    assert(ptr != NULL);
+    assert(ptr != nullptr);
 
 #if Debug
     printf("Freeing ptr: %p with tag: %s\n", ptr, tag);

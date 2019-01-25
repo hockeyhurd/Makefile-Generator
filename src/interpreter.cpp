@@ -44,8 +44,8 @@ static const u32 flagVerCheckLen = 6;
 static void loadDefaultEnvironment(std::vector<SourceFile> &, IFlags &);
 
 IFlags::IFlags(std::string outputName) : optLevel(OPT_INVALID), wall(INTERPRETER_INVALID_FLAG),
-    wextra(INTERPRETER_INVALID_FLAG), stdver(INTERPRETER_INVALID_FLAG), cmode(INTERPRETER_INVALID_FLAG),
-    outputName(std::move(outputName)) {
+    wextra(INTERPRETER_INVALID_FLAG), werror(INTERPRETER_INVALID_FLAG), stdver(INTERPRETER_INVALID_FLAG),
+    cmode(INTERPRETER_INVALID_FLAG), outputName(std::move(outputName)) {
 
     flags.reserve(0x10);
 }
@@ -55,6 +55,10 @@ b32 IFlags::decode(const std::string &arg) {
 
     if (arg == "-Wall")
         wall = 1;
+    else if (arg == "-Wextra")
+        wextra = 1;
+    else if (arg == "-Werror")
+        werror = 1;
     else if (arg == "-g")
         optLevel = OptLevel::OPT_DEBUG;
     else if (arg == "-O0")

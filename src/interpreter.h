@@ -44,6 +44,7 @@ struct IFlags {
     OptLevel optLevel;
     flag_t wall;
     flag_t wextra;
+    flag_t werror;
     flag_t stdver;
     flag_t cmode;
     std::string outputName;
