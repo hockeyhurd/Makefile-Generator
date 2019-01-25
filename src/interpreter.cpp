@@ -39,18 +39,105 @@ static const u32 flagNameCheckLen = 6;
 static const u32 flagVerCheckLen = 6;
 // static SourceFile fileBuf[0x100];
 
-static void cleanupAllocs(ArrayList *);
-static b32 decodeIFlag(const std::string &, IFlags *);
+// b32 decodeIFlag(const std::string &, IFlags *);
 
 static void loadDefaultEnvironment(std::vector<SourceFile> &, IFlags &);
 
-void cleanupAllocs(ArrayList *list) {
-    destructArrayList(list);
-    // free(*list);
-    myFree(list, "Allocs");
-    // *list = NULL;
+IFlags::IFlags(std::string outputName) : optLevel(OPT_INVALID), wall(INTERPRETER_INVALID_FLAG),
+    wextra(INTERPRETER_INVALID_FLAG), stdver(INTERPRETER_INVALID_FLAG), cmode(INTERPRETER_INVALID_FLAG),
+    outputName(std::move(outputName)) {
+
+    flags.reserve(0x10);
 }
 
+b32 IFlags::decode(const std::string &arg) {
+    std::string temp = "-l";
+
+    if (arg == "-Wall")
+        wall = 1;
+    else if (arg == "-g")
+        optLevel = OptLevel::OPT_DEBUG;
+    else if (arg == "-O0")
+        optLevel = OptLevel::OPT_OFF;
+    else if (arg == "-O1")
+        optLevel = OptLevel::OPT_LOW;
+    else if (arg == "-O2")
+        optLevel = OptLevel::OPT_MED;
+    else if (arg == "-O3")
+        optLevel = OptLevel::OPT_HIGH;
+    else if (arg == "-pipe") {
+        flags.emplace_back("-pipe");
+    }
+
+    else if (arg == "-pthread") {
+        flags.emplace_back("-pthread");
+    }
+
+        // Below needs to be verified as incorrect! (Temp deprecated!).
+#if 0
+        else if (!stringCompare(arg->cstr, "-gtest")) {
+        String *gtest = (String *) myMalloc(sizeof(String), "Malloc -gtest flag");
+        constructString(gtest, "-gtest");
+
+        addArrayList(&flags->flags, gtest);
+    }
+#endif
+
+    else if (arg[0] == temp[0] && arg[1] == temp[1]) {
+        // String *link = (String *) myMalloc(sizeof(String), "Malloc -l flag");
+        // constructString(link, arg->cstr);
+
+        // addArrayList(&flags->flags, link);
+        flags.emplace_back(arg);
+    }
+
+        // Could be "-name=<insert name here>"
+    else if (arg.size() >= flagNameCheckLen) {
+        for (u32 i = 0; i < flagNameCheckLen; i++) {
+            if (arg[i] != flagNameCheck[i]) {
+                goto CHECK;
+                return False;
+            }
+        }
+
+        // Valid name, set appropriate flags.
+        // constructString(&flags->outputName, arg->cstr + 6);
+        outputName = arg.c_str() + 6;
+    }
+
+        // -std=c11, -std=c++11
+        // Check for stdver:
+    else if (arg.size() == 9 || arg.size() == 11) {
+        CHECK:;
+        u32 i;
+        for (i = 0; i < flagVerCheckLen; i++) {
+            if (arg[i] != flagVerCheck[i])
+                return False;
+        }
+
+        if (arg.size() == 11) {
+            if (arg[i++] != '+' || arg[i++] != '+')
+                return False;
+        }
+
+        // flags->stdver
+        String temp;
+        temp.cstr = (char *) &arg.c_str()[i];
+        temp.len = stringLength(temp.cstr);
+
+        u32 output = 0;
+
+        parseUInt(&temp, &output);
+        stdver = (flag_t) (output & 0xff);
+    }
+
+    else
+        return False;
+
+    return True;
+}
+
+#if 0
 b32 decodeIFlag(const std::string &arg, IFlags &flags) {
     std::string temp = "-l";
 
@@ -67,18 +154,10 @@ b32 decodeIFlag(const std::string &arg, IFlags &flags) {
     else if (arg == "-O3")
         flags.optLevel = OptLevel::OPT_HIGH;
     else if (arg == "-pipe") {
-        // String *pipe = (String *) myMalloc(sizeof(String), "Malloc -pipe flag");
-        // constructString(pipe, "-pipe");
-
-        // addArrayList(&flags->flags, pipe);
         flags.flags.emplace_back("-pipe");
     }
 
     else if (arg == "-pthread") {
-        // String *pThread = (String *) myMalloc(sizeof(String), "Malloc -pthread flag");
-        // constructString(pThread, "-pthread");
-
-        // addArrayList(&flags->flags, pThread);
         flags.flags.emplace_back("-pthread");
     }
 
@@ -145,6 +224,7 @@ b32 decodeIFlag(const std::string &arg, IFlags &flags) {
 
     return True;
 }
+#endif
 
 void loadDefaultEnvironment(std::vector<SourceFile> &sourceFiles, IFlags &flags) {
     /*
@@ -180,6 +260,7 @@ void loadDefaultEnvironment(std::vector<SourceFile> &sourceFiles, IFlags &flags)
     flags.flags.emplace_back("-pipe");
 }
 
+#if 0
 void initIFlags(IFlags &flags) {
     flags.optLevel = OPT_INVALID;
     flags.wall = INTERPRETER_INVALID_FLAG;
@@ -198,6 +279,7 @@ void freeIFlags(IFlags &flags) {
 
     flags.flags.clear();
 }
+#endif
 
 pint interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceFiles, IFlags &flags) {
     if (argc <= 1 || argv == nullptr)
@@ -224,7 +306,7 @@ pint interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceF
 
         // Is argument.
         if (arg[0] == '-') {
-            if (!decodeIFlag(arg, flags)) {
+            if (!flags.decode(arg)) {
                 perror("Error parsing flag: ");
                 perror(arg.c_str());
                 perror("\n");

@@ -7,6 +7,7 @@
 #include "dirent.h"
 
 #include <sys/stat.h>
+#include <string>
 
 #if OS_WIN
 #include <direct.h>
@@ -17,6 +18,7 @@ inline static char *getcwd(char *buf, s32 len) {
 #include <unistd.h>
 #endif
 
+#if 0
 static char *toFileMode(const EFileOp op) {
     switch (op) {
         case EFILE_OP_READ:
@@ -30,33 +32,53 @@ static char *toFileMode(const EFileOp op) {
             perror("Error unknown mode!\n");
             exit(-1);
 #endif
-            return NULL;
+            return nullptr;
     }
 }
+#else
+static std::string toFileMode(const EFileOp op) {
+    switch (op) {
+        case EFILE_OP_READ:
+            return "r";
+        case EFILE_OP_WRITE:
+            return "w";
+        case EFILE_OP_OVERWRITE:
+            return "w+";
+        default:
+#if Debug
+            perror("Error unknown mode!\n");
+            exit(-1);
+#endif
+            return "";
+    }
+}
+#endif
 
 static char workingDirBuf[1024];
 
 char *getCurrentWorkingDir(void) {
-    if (getcwd(workingDirBuf, sizeof(workingDirBuf)) != NULL)
+    if (getcwd(workingDirBuf, sizeof(workingDirBuf)) != nullptr)
         return workingDirBuf;
 
-    return NULL;
+    return nullptr;
 }
 
 b32 checkIfFileExists(const char *path) {
     struct stat s;
-    return path != NULL && stringLength(path) && stat(path, &s) == 0 ? True : False;
+    return path != nullptr && stringLength(path) && stat(path, &s) == 0 ? True : False;
 }
 
 u32 openFile(File *file) {
-    char *mode = toFileMode(file->op);
+    /*char *mode = toFileMode(file->op);
 
-    if (mode == NULL)
-        return 1;
+    if (mode == nullptr)
+        return 1;*/
 
-    file->file = fopen(file->path.cstr, mode);
+    std::string mode = toFileMode(file->op);
 
-    if (file->file == NULL) {
+    file->file = fopen(file->path.cstr, mode.c_str());
+
+    if (file->file == nullptr) {
         // perror("Error openning file!\n");
 		fprintf(stderr, "Error openning file: '%s'!\n", file->path.cstr);
         return 1;
@@ -78,7 +100,7 @@ u32 openFile(File *file) {
 
 void closeFile(File *file) {
     fclose(file->file);
-    file->file = NULL;
+    file->file = nullptr;
 }
 
 u32 readByteFromFile(const File *file) {
@@ -137,12 +159,12 @@ void writeIntToFile(const u32 data, const File *file, const b32 bigEndian) {
 }
 
 b32 openDir(Dir *dir) {
-	if (dir == NULL || dir->op == EDIR_OP_VALID)
+	if (dir == nullptr || dir->op == EDIR_OP_VALID)
 		return False;
 
-	dir->dir = (struct DIR *) opendir(dir->path.cstr);
+	dir->dir = (DIR *) opendir(dir->path.cstr);
 
-	if (dir->dir == NULL) {
+	if (dir->dir == nullptr) {
 		fprintf(stderr, "Error openning directory: '%s'!\n", dir->path.cstr);
 		return False;
 	}
@@ -151,15 +173,16 @@ b32 openDir(Dir *dir) {
 }
 
 void closeDir(Dir *dir) {
-	if (dir != NULL && dir->dir != NULL && dir->op == EDIR_OP_VALID) {
+	if (dir != nullptr && dir->dir != nullptr && dir->op == EDIR_OP_VALID) {
 		closedir((DIR *) dir->dir);
-		dir->dir = NULL;
+		dir->dir = nullptr;
 		dir->op = EDIR_OP_INVALID;
 	}
 }
 
+#if 0
 u32 getFilesAndSubdirectories(const Dir *dir, const ArrayList *list) {
-	if (dir == NULL || dir->dir == NULL || dir->op != EDIR_OP_VALID || list == NULL) {
+	if (dir == nullptr || dir->dir == nullptr || dir->op != EDIR_OP_VALID || list == nullptr) {
 		// fprintf(stderr, "Error reading files and subdirectories!\n");
 		perror("Error reading files and subdirectories!\n");
 		return 1;
@@ -167,7 +190,7 @@ u32 getFilesAndSubdirectories(const Dir *dir, const ArrayList *list) {
 
 	struct dirent *entry;
 
-	while ((entry = readdir((DIR *) dir->dir)) != NULL) {
+	while ((entry = readdir((DIR *) dir->dir)) != nullptr) {
 		String *currentFile = (String *) myMalloc(sizeof(String), "Construct file/dir name");
 		constructString(currentFile, entry->d_name);
 
@@ -178,7 +201,7 @@ u32 getFilesAndSubdirectories(const Dir *dir, const ArrayList *list) {
 }
 
 void cleanupDirectoryListing(const ArrayList *list) {
-	if (list == NULL || !list->len)
+	if (list == nullptr || !list->len)
 		return;
 
 	ArrayListIterator iter;
@@ -190,3 +213,4 @@ void cleanupDirectoryListing(const ArrayList *list) {
 		myFree(file, "Free file!");
 	}
 }
+#endif

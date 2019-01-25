@@ -27,11 +27,9 @@
 #include "maker.h"
 #include "string.h"
 
-typedef ArrayListIterator Iter;
+extern void myFree(void *, const char *);
 
-void myFree(void *, const char *);
-
-static void writeString(const String *, const FILE *);
+// static void writeString(const String *, const FILE *);
 static void writeString(const std::string &, const FILE *);
 static void writeCString(const char *, const FILE *);
 static void writeChar(const char, const FILE *);
@@ -49,15 +47,15 @@ SRC::SRC(std::string fileName, std::string flags, std::vector<SourceFile> &sourc
 
 }
 
-SRC::SRC(std::string fileName, std::vector<SourceFile> &sourceFiles) : fileName(fileName),
+SRC::SRC(std::string fileName, std::vector<SourceFile> &sourceFiles) : fileName(std::move(fileName)),
     flags(""), sourceFiles(sourceFiles) {
 
 }
 
-void writeString(const String *word, const FILE *file) {
+/*void writeString(const String *word, const FILE *file) {
     for (u32 i = 0; i < word->len - 1; i++)
         putc(word->cstr[i], (FILE *) file);
-}
+}*/
 
 void writeString(const std::string &word, const FILE *file) {
     for (auto c : word) {

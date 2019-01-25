@@ -31,7 +31,6 @@
 #include <string>
 
 #include "source.h"
-#include "arraylist.h"
 
 #define INTERPRETER_INVALID_FLAG 0x80
 
@@ -41,17 +40,24 @@ typedef enum OptimizationLevel {
     OPT_INVALID = 0x80, OPT_DEBUG = 0, OPT_OFF = 1, OPT_LOW = 2, OPT_MED = 3, OPT_HIGH = 4
 } OptLevel;
 
-typedef struct IFlags {
+struct IFlags {
     OptLevel optLevel;
     flag_t wall;
+    flag_t wextra;
     flag_t stdver;
     flag_t cmode;
     std::string outputName;
     std::vector<std::string> flags;
-} IFlags;
 
+    IFlags(std::string = "");
+
+    b32 decode(const std::string &);
+};
+
+#if 0
 void initIFlags(IFlags &);
 void freeIFlags(IFlags &);
+#endif
 
 /**
 *  Interprets command line arguments into gcc style compilation

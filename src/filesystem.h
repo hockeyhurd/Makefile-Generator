@@ -9,11 +9,11 @@
 #define MAKEFILEGENERATOR_FILESYSTEM_H
 
 #include "string.h"
-#include "arraylist.h"
+#include "dirent.h"
 
-#include <stdio.h>
+#include <cstdio>
 
-struct DIR;
+// struct DIR;
 
 typedef enum EnumFileOp {
     EFILE_OP_INVALID = 0, EFILE_OP_READ = 1, EFILE_OP_WRITE = 2, EFILE_OP_OVERWRITE = 3
@@ -33,7 +33,7 @@ typedef struct File {
 typedef struct Directory {
 	String path;
 	EDirOp op;
-	struct DIR *dir;
+	DIR *dir;
 } Dir;
 
 char *getCurrentWorkingDir(void);
@@ -52,7 +52,9 @@ void writeIntToFile(const u32, const File *, const b32);
 b32 openDir(Dir *);
 void closeDir(Dir *);
 
+#if 0
 u32 getFilesAndSubdirectories(const Dir *, const ArrayList *);
 void cleanupDirectoryListing(const ArrayList *);
+#endif
 
 #endif //MAKEFILEGENERATOR_FILESYSTEM_H

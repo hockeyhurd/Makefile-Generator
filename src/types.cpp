@@ -24,7 +24,8 @@
 
 #include "types.h"
 
-#include <assert.h>
+#include <cassert>
+#include <iostream>
 
 #ifdef __cplusplus
 extern "C" {

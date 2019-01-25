@@ -23,12 +23,11 @@
 */
 
 #include <vector>
+#include <iostream>
 
 #include "interpreter.h"
 #include "maker.h"
 #include "filesystem.h"
-#include "linkedlist.h"
-#include "arraylist.h"
 
 #ifdef WIN32
 #include <vld.h>
@@ -44,8 +43,6 @@ static void pause(void) {
 
 #define TEST 0
 
-typedef ArrayListIterator Iter;
-
 #if 0
 static void printString(const String *);
 
@@ -53,20 +50,6 @@ void printString(const String *string) {
     printf("[%u]: %s\n", string->len, string->cstr);
 }
 #endif
-
-static s32 intCompare(void *left, void *right) {
-	s32 leftInt = *(s32 *) &left;
-	s32 rightInt = *(s32 *) &right;
-
-	return leftInt - rightInt;
-}
-
-static s32 pintCompare(void *leftPtr, void *rightPtr) {
-    pint left = *(pint *) &leftPtr;
-    pint right = *(pint *) &rightPtr;
-
-    return left < right ? -1 : left > right ? 1 : 0;
-}
 
 s32 main(s32 argc, char **argv) {
 #if 0
@@ -212,17 +195,16 @@ s32 main(s32 argc, char **argv) {
 
 #else
     IFlags flags;
-    initIFlags(flags);
 
-    // ArrayList *sourceFiles = interpretArgs(argc, argv, &flags);
     std::vector<SourceFile> sourceFiles;
 
-    if (!interpretArgs(argc, argv, sourceFiles, flags)) {
+    if (!interpretArgs((const u32) argc, argv, sourceFiles, flags)) {
         printf("Error collecting source flags...\n");
     }
 
     else {
-        printf("Collecting source files success!!\n");
+        // printf("Collecting source files success!!\n");
+        std::cout << "Collecting source files success!!\n";
 
         u32 fileNum = 0;
         // Iter iter;
@@ -242,23 +224,9 @@ s32 main(s32 argc, char **argv) {
 #endif
 
         SRC source("makefile", sourceFiles);
-        // constructSources(&source, "makefile", &sourceFiles);
 
         writeToFile(source, flags);
-
-        /*constructArrayListIterator(&iter, &sourceFiles);
-        while (hasNextArrayListIterator(&iter)) {
-            SourceFile *sourceFile = (SourceFile *) nextArrayListIterator(&iter);
-            // printf("\t[%u]: %s\n", ++fileNum, sourceFile->fileName.cstr);
-            // free(sourceFile->fileName.cstr);
-            myFree(sourceFile->fileName.cstr, "SourceFile's String");
-        }*/
-
-        // destructArrayList(&sourceFiles);
-        // destructSources(&source);
     }
-
-    freeIFlags(flags);
 #endif
     pause();
     return 0;

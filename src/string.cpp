@@ -24,6 +24,8 @@
 
 #include "string.h"
 
+#include <iostream>
+
 extern void myFree(void *, const char *);
 
 #ifdef __cplusplus

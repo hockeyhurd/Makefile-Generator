@@ -27,9 +27,9 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#include <stdint.h>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdint>
+// #include <stdio.h>
+#include <cstdlib>
 
 #ifdef __APPLE__
 #define OS_APPLE 1
@@ -49,16 +49,6 @@
 #define Debug 1
 #else 
 #define Debug 0
-#endif
-
-#if Debug
-#define global_status 
-#else
-#define global_status static
-#endif
-
-#ifndef internal
-#define internal static
 #endif
 
 typedef uint8_t u8;
