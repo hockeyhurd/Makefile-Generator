@@ -24,6 +24,7 @@
 
 #include "interpreter.h"
 #include "string.h"
+#include <cstring>
 
 #ifndef DEFAULT_C_STD
 #define DEFAULT_C_STD 99u
