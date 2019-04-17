@@ -199,7 +199,7 @@ s32 main(s32 argc, char **argv) {
     std::vector<SourceFile> sourceFiles;
 
     if (!interpretArgs((const u32) argc, argv, sourceFiles, flags)) {
-        printf("Error collecting source flags...\n");
+        std::cout << "Error collecting source flags...\n";
     }
 
     else {

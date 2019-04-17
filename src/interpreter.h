@@ -40,17 +40,22 @@ typedef enum OptimizationLevel {
     OPT_INVALID = 0x80, OPT_DEBUG = 0, OPT_OFF = 1, OPT_LOW = 2, OPT_MED = 3, OPT_HIGH = 4
 } OptLevel;
 
+enum class OutputType {
+    EMPTY = 0, EXE = 1, STATIC = 2, SHARED = 3
+};
+
 struct IFlags {
+    OutputType outputType;
+    std::string outputName;
     OptLevel optLevel;
     flag_t wall;
     flag_t wextra;
     flag_t werror;
     flag_t stdver;
     flag_t cmode;
-    std::string outputName;
     std::vector<std::string> flags;
 
-    IFlags(std::string = "");
+    explicit IFlags(const OutputType = OutputType::EMPTY, std::string && = "");
 
     b32 decode(const std::string &);
 };
@@ -73,6 +78,6 @@ void freeIFlags(IFlags &);
 *  @return Unsigned 32-bit int count of number of source files.  If any pointer is
 *       NULL, the function will return 0.
 */
-pint interpretArgs(const u32, char **, std::vector<SourceFile> &, IFlags &);
+size_t interpretArgs(const u32, char **, std::vector<SourceFile> &, IFlags &);
 
 #endif //MAKEGEN_INTERPRETER_H

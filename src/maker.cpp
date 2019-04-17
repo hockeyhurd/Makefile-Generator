@@ -321,6 +321,11 @@ void writeMakefileModules(SRC &source, IFlags &flags, const FILE *makefile) {
     writeCString(CC_FLAGS_VAR, makefile);
     writeChar(' ', makefile);
 
+    if (flags.outputType == OutputType::STATIC)
+        writeCString("-static ", makefile);
+    else if (flags.outputType == OutputType::SHARED)
+        writeCString("-shared ", makefile);
+
     if (flags.outputName.size() > 0) {
         writeCString("-o ", makefile);
         writeString(flags.outputName, makefile);

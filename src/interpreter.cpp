@@ -44,9 +44,9 @@ static const u32 flagVerCheckLen = 6;
 
 static void loadDefaultEnvironment(std::vector<SourceFile> &, IFlags &);
 
-IFlags::IFlags(std::string outputName) : optLevel(OPT_INVALID), wall(INTERPRETER_INVALID_FLAG),
+IFlags::IFlags(const OutputType outputType, std::string &&outputName) : outputType(outputType), outputName(outputName), optLevel(OPT_INVALID), wall(INTERPRETER_INVALID_FLAG),
     wextra(INTERPRETER_INVALID_FLAG), werror(INTERPRETER_INVALID_FLAG), stdver(INTERPRETER_INVALID_FLAG),
-    cmode(INTERPRETER_INVALID_FLAG), outputName(std::move(outputName)) {
+    cmode(INTERPRETER_INVALID_FLAG) {
 
     flags.reserve(0x10);
 }
@@ -76,6 +76,18 @@ b32 IFlags::decode(const std::string &arg) {
 
     else if (arg == "-pthread") {
         flags.emplace_back("-pthread");
+    }
+
+    else if (arg == "-exe") {
+        outputType = OutputType::EXE;
+    }
+
+    else if (arg == "-static") {
+        outputType = OutputType::STATIC;
+    }
+
+    else if (arg == "-shared") {
+        outputType = OutputType::SHARED;
     }
 
         // Below needs to be verified as incorrect! (Temp deprecated!).
@@ -286,7 +298,7 @@ void freeIFlags(IFlags &flags) {
 }
 #endif
 
-pint interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceFiles, IFlags &flags) {
+size_t interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceFiles, IFlags &flags) {
     if (argc <= 1 || argv == nullptr)
         return 0;
 
@@ -342,6 +354,11 @@ pint interpretArgs(const u32 argc, char **argv, std::vector<SourceFile> &sourceF
                     flags.cmode = static_cast<flag_t>(cmode);
             }
         }
+    }
+
+    // Make sure the output type is known.
+    if (flags.outputType == OutputType::EMPTY) {
+        flags.outputType = OutputType::EXE;
     }
 
     return sourceFiles.size();
