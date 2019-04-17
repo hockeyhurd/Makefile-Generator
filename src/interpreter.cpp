@@ -79,15 +79,24 @@ b32 IFlags::decode(const std::string &arg) {
     }
 
     else if (arg == "-exe") {
-        outputType = OutputType::EXE;
+        if (outputType == OutputType::EMPTY)
+            outputType = OutputType::EXE;
+        else
+            return False;
     }
 
     else if (arg == "-static") {
-        outputType = OutputType::STATIC;
+        if (outputType == OutputType::EMPTY)
+            outputType = OutputType::STATIC;
+        else
+            return False;
     }
 
     else if (arg == "-shared") {
-        outputType = OutputType::SHARED;
+        if (outputType == OutputType::EMPTY)
+            outputType = OutputType::SHARED;
+        else
+            return False;
     }
 
         // Below needs to be verified as incorrect! (Temp deprecated!).
