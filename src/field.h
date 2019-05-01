@@ -58,6 +58,15 @@ public:
 	b32 stringStartsWith(const std::string &);
 	b32 stringStartsWith(std::string &&);
 
+	class FieldComparer {
+		
+	public:
+
+		// b32 operator< (const std::string &, const std::string &);
+		b32 operator() (const std::string &, const std::string &) const;
+
+	};
+	
 };
 
 b32 stringStartsWith(const std::string &, const std::string &);

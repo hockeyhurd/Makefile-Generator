@@ -75,3 +75,7 @@ b32 stringStartsWith(const std::string &arg, const std::string &field) {
 
     return True;
 }
+
+b32 Field::FieldComparer::operator() (const std::string &arg, const std::string &field) const {
+	return ::stringStartsWith(arg, field);
+}

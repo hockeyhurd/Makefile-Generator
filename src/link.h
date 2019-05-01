@@ -24,32 +24,20 @@
 
 #pragma once
 
-#ifndef MAKEGEN_OPTIMIZATION_LEVEL_H
-#define MAKEGEN_OPTIMIZATION_LEVEL_H
+#ifndef MAKEGEN_LINK_H
+#define MAKEGEN_LINK_H
 
 #include "field.h"
 
-class FieldOptimizationLevel : public Field {
+class FieldLink : public Field {
 
 public:
 
-	FieldOptimizationLevel();
-	~FieldOptimizationLevel() = default;
-
-	b32 apply(const std::string &, IFlags &);
-
-};
-
-class FieldDebugLevel : public Field {
-
-public:
-
-	FieldDebugLevel();
-	~FieldDebugLevel() = default;
+	FieldLink();
+	~FieldLink() = default;
 
 	b32 apply(const std::string &, IFlags &) override;
 
 };
 
-#endif // !MAKEGEN_OPTIMIZATION_LEVEL_H
-
+#endif //!MAKEGEN_LINK_H

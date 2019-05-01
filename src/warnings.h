@@ -36,7 +36,7 @@ public:
 	FieldWarnings();
 	~FieldWarnings() = default;
 
-	b32 apply(const std::string &, IFlags &);
+	b32 apply(const std::string &, IFlags &) override;
 
 };
 

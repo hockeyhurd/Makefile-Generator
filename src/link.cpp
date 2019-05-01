@@ -22,34 +22,14 @@
 * SOFTWARE.
 */
 
-#pragma once
+#include "link.h"
 
-#ifndef MAKEGEN_OPTIMIZATION_LEVEL_H
-#define MAKEGEN_OPTIMIZATION_LEVEL_H
+FieldLink::FieldLink() : Field("-l") {
 
-#include "field.h"
+}
 
-class FieldOptimizationLevel : public Field {
+b32 FieldLink::apply(const std::string &arg, IFlags &flags) {
+	flags.flags.emplace_back(arg);
 
-public:
-
-	FieldOptimizationLevel();
-	~FieldOptimizationLevel() = default;
-
-	b32 apply(const std::string &, IFlags &);
-
-};
-
-class FieldDebugLevel : public Field {
-
-public:
-
-	FieldDebugLevel();
-	~FieldDebugLevel() = default;
-
-	b32 apply(const std::string &, IFlags &) override;
-
-};
-
-#endif // !MAKEGEN_OPTIMIZATION_LEVEL_H
-
+	return True;
+}

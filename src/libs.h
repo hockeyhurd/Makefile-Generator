@@ -36,7 +36,7 @@ public:
 	FieldStaticLibs();
 	~FieldStaticLibs() = default;
 
-	b32 apply(const std::string &, IFlags &);
+	b32 apply(const std::string &, IFlags &) override;
 
 };
 
@@ -47,7 +47,7 @@ public:
 	FieldSharedLibs();
 	~FieldSharedLibs() = default;
 
-	b32 apply(const std::string &, IFlags &);
+	b32 apply(const std::string &, IFlags &) override;
 
 };
 
@@ -58,7 +58,7 @@ public:
 	FieldExe();
 	~FieldExe() = default;
 
-	b32 apply(const std::string &, IFlags &);
+	b32 apply(const std::string &, IFlags &) override;
 
 };
 

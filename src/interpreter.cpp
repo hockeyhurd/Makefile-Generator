@@ -24,7 +24,16 @@
 
 #include "interpreter.h"
 #include "string.h"
+#include "libs.h"
+#include "link.h"
+#include "name.h"
+#include "optimization_level.h"
+#include "stdver.h"
+#include "warnings.h"
+
 #include <cstring>
+#include <memory>
+#include <vector>
 
 #ifndef DEFAULT_C_STD
 #define DEFAULT_C_STD 99u
@@ -40,6 +49,8 @@ static const u32 flagVerCheckLen = 6;
 
 static void loadDefaultEnvironment(std::vector<SourceFile> &, IFlags &);
 
+static void fillFieldVec(std::vector<Field *> &);
+
 IFlags::IFlags(const OutputType outputType, std::string &&outputName) : outputType(outputType), outputName(outputName), optLevel(OPT_INVALID), wall(INTERPRETER_INVALID_FLAG),
 	wextra(INTERPRETER_INVALID_FLAG), werror(INTERPRETER_INVALID_FLAG), pedantic(INTERPRETER_INVALID_FLAG) , stdver(INTERPRETER_INVALID_FLAG), cmode(INTERPRETER_INVALID_FLAG) {
 
@@ -47,7 +58,8 @@ IFlags::IFlags(const OutputType outputType, std::string &&outputName) : outputTy
 }
 
 b32 IFlags::decode(const std::string &arg) {
-	std::string temp = "-l";
+#if 0
+	static const std::string temp = "-l";
 
 	if (arg == "-Wall")
 		wall = 1;
@@ -160,96 +172,45 @@ b32 IFlags::decode(const std::string &arg) {
 		return False;
 
 	return True;
-}
+#else
+	static std::vector<Field *> fieldVec;
 
-#if 0
-b32 decodeIFlag(const std::string &arg, IFlags &flags) {
-	std::string temp = "-l";
-
-	if (arg == "-Wall")
-		flags.wall = 1;
-	else if (arg == "-g")
-		flags.optLevel = OptLevel::OPT_DEBUG;
-	else if (arg == "-O0")
-		flags.optLevel = OptLevel::OPT_OFF;
-	else if (arg == "-O1")
-		flags.optLevel = OptLevel::OPT_LOW;
-	else if (arg == "-O2")
-		flags.optLevel = OptLevel::OPT_MED;
-	else if (arg == "-O3")
-		flags.optLevel = OptLevel::OPT_HIGH;
-	else if (arg == "-pipe") {
-		flags.flags.emplace_back("-pipe");
+	if (fieldVec.empty()) {
+		fillFieldVec(fieldVec);
 	}
 
-	else if (arg == "-pthread") {
-		flags.flags.emplace_back("-pthread");
-	}
-
-	// Below needs to be verified as incorrect! (Temp deprecated!).
-#if 0
-	else if (!stringCompare(arg->cstr, "-gtest")) {
-		String *gtest = (String *)myMalloc(sizeof(String), "Malloc -gtest flag");
-		constructString(gtest, "-gtest");
-
-		addArrayList(&flags->flags, gtest);
-	}
-#endif
-
-	else if (arg[0] == temp[0] && arg[1] == temp[1]) {
-		// String *link = (String *) myMalloc(sizeof(String), "Malloc -l flag");
-		// constructString(link, arg->cstr);
-
-		// addArrayList(&flags->flags, link);
-		flags.flags.emplace_back(arg);
-	}
-
-	// Could be "-name=<insert name here>"
-	else if (arg.size() >= flagNameCheckLen) {
-		for (u32 i = 0; i < flagNameCheckLen; i++) {
-			if (arg[i] != flagNameCheck[i]) {
-				goto CHECK;
-				return False;
-			}
+	for (auto &fieldPtr : fieldVec) {
+		if (fieldPtr->stringStartsWith(arg)) {
+			fieldPtr->apply(arg, *this);
+			break;
 		}
-
-		// Valid name, set appropriate flags.
-		// constructString(&flags->outputName, arg->cstr + 6);
-		flags.outputName = arg.c_str() + 6;
 	}
-
-	// -std=c11, -std=c++11
-	// Check for stdver:
-	else if (arg.size() == 9 || arg.size() == 11) {
-	CHECK:;
-		u32 i;
-		for (i = 0; i < flagVerCheckLen; i++) {
-			if (arg[i] != flagVerCheck[i])
-				return False;
-		}
-
-		if (arg.size() == 11) {
-			if (arg[i++] != '+' || arg[i++] != '+')
-				return False;
-		}
-
-		// flags->stdver
-		String temp;
-		temp.cstr = (char *)&arg.c_str()[i];
-		temp.len = stringLength(temp.cstr);
-
-		u32 output = 0;
-
-		parseUInt(&temp, &output);
-		flags.stdver = (flag_t)(output & 0xff);
-	}
-
-	else
-		return False;
 
 	return True;
-}
 #endif
+}
+
+void fillFieldVec(std::vector<Field *> &fieldVec) {
+	static FieldSharedLibs sharedLibs;
+	static FieldStaticLibs staticLibs;
+	static FieldExe exe;
+	static FieldLink link;
+	static FieldName name;
+	static FieldDebugLevel debugLevel;
+	static FieldOptimizationLevel optLevel;
+	static FieldStdVer stdVer;
+	static FieldWarnings warnings;
+
+	fieldVec.emplace_back(&sharedLibs);
+	fieldVec.emplace_back(&staticLibs);
+	fieldVec.emplace_back(&exe);
+	fieldVec.emplace_back(&name);
+	fieldVec.emplace_back(&link);
+	fieldVec.emplace_back(&debugLevel);
+	fieldVec.emplace_back(&optLevel);
+	fieldVec.emplace_back(&stdVer);
+	fieldVec.emplace_back(&warnings);
+}
 
 void loadDefaultEnvironment(std::vector<SourceFile> &sourceFiles, IFlags &flags) {
 	/*

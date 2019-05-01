@@ -41,7 +41,7 @@ public:
     FieldStdVer();
     ~FieldStdVer() = default;
 
-    b32 apply(const std::string &, IFlags &);
+    b32 apply(const std::string &, IFlags &) override;
 };
 
 #endif //MAKEFILEGENERATOR_STDVER_H
