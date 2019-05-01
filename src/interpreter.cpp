@@ -30,7 +30,6 @@
 #define DEFAULT_C_STD 99u
 #endif // !DEFAULT_C_STD
 
-
 extern void myFree(void *, const char *);
 extern void *myMalloc(const u32, const char *);
 
@@ -38,9 +37,6 @@ static const char *flagVerCheck = "-std=c";
 static const char *flagNameCheck = "-name=";
 static const u32 flagNameCheckLen = 6;
 static const u32 flagVerCheckLen = 6;
-// static SourceFile fileBuf[0x100];
-
-// b32 decodeIFlag(const std::string &, IFlags *);
 
 static void loadDefaultEnvironment(std::vector<SourceFile> &, IFlags &);
 
