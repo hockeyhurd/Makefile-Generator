@@ -42,7 +42,7 @@ b32 FieldStdVer::apply(const std::string &arg, IFlags &flags) {
             return False;
         }
 
-        u32 i = 8;
+        u32 i = 6;
 
         if (arg.size() == 10) {
             if (arg[i++] != '+' || arg[i++] != '+')

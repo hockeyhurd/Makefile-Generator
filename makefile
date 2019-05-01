@@ -1,5 +1,5 @@
 CC = g++
-CC_FLAGS = -g -Wall
+CC_FLAGS = -g -Wall -std=c++11
 all: link carraylist.o filesystem.o interpreter.o main.o maker.o source.o string.o types.o 
 
 carraylist.o: carraylist.cpp
