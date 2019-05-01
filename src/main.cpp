@@ -34,10 +34,10 @@
 #endif
 
 static void pause(void) {
-    // system("PAUSE");
+	// system("PAUSE");
 #if OS_WIN
-    printf("Press enter to continue.\n");
-    getchar();
+	printf("Press enter to continue.\n");
+	getchar();
 #endif
 }
 
@@ -47,7 +47,7 @@ static void pause(void) {
 static void printString(const String *);
 
 void printString(const String *string) {
-    printf("[%u]: %s\n", string->len, string->cstr);
+	printf("[%u]: %s\n", string->len, string->cstr);
 }
 #endif
 
@@ -56,18 +56,18 @@ s32 main(s32 argc, char **argv) {
 
 	FilterList filter;
 	filter.whiteListMode = True;
-	
+
 	constructArrayList(&filter.descriptor, 0x10, sizeof(u32));
 
 	for (u32 i = 0; i <= 10; i += 2) {
-		addArrayList(&filter.descriptor, (const void *) (pint) i);
+		addArrayList(&filter.descriptor, (const void *)(pint)i);
 	}
 
 	u32 input[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 	const u32 len = sizeof(input) / sizeof(input[0]);
 	u32 output[sizeof(input) / sizeof(input[0])] = { 0 };
 
-	const u32 numElementsFound = filterArray((void **) input, (void **) output, (const pint) len, (const u32) sizeof(input[0]), &filter, intCompare);
+	const u32 numElementsFound = filterArray((void **)input, (void **)output, (const pint)len, (const u32) sizeof(input[0]), &filter, intCompare);
 
 	puts("Output:\n");
 	for (u32 i = 0; i < numElementsFound; i++) {
@@ -81,153 +81,151 @@ s32 main(s32 argc, char **argv) {
 	LinkedList list;
 	constructLinkedList(&list);
 
-	addLinkedList(&list, (pint *) 0x10);
-    addLinkedList(&list, (pint *) 0x20);
-    addLinkedList(&list, (pint *) 0x30);
-    addLinkedList(&list, (pint *) 0x40);
+	addLinkedList(&list, (pint *)0x10);
+	addLinkedList(&list, (pint *)0x20);
+	addLinkedList(&list, (pint *)0x30);
+	addLinkedList(&list, (pint *)0x40);
 
-    LinkedListIter iter;
+	LinkedListIter iter;
 
 #if 1
-    constructLinkedListIter(&iter, &list, True);
+	constructLinkedListIter(&iter, &list, True);
 
-    while (hasNextLinkedListIter(&iter)) {
-        void *valAsPtr = nextLinkedListIter(&iter);
-        const pint value = *(pint *) &valAsPtr;
+	while (hasNextLinkedListIter(&iter)) {
+		void *valAsPtr = nextLinkedListIter(&iter);
+		const pint value = *(pint *)&valAsPtr;
 
-        printf("Value: %lu\n", value);
-    }
+		printf("Value: %lu\n", value);
+	}
 
 #else
 
-    constructLinkedListIter(&iter, &list, False);
+	constructLinkedListIter(&iter, &list, False);
 
-    while (hasPrevLinkedListIter(&iter)) {
-        void *valAsPtr = prevLinkedListIter(&iter);
-        const pint value = *(pint *) &valAsPtr;
+	while (hasPrevLinkedListIter(&iter)) {
+		void *valAsPtr = prevLinkedListIter(&iter);
+		const pint value = *(pint *)&valAsPtr;
 
-        printf("Value: %lu\n", value);
-    }
+		printf("Value: %lu\n", value);
+	}
 
 #endif
 
-    removeLinkedList(&list, (pint *) 0x10, pintCompare);
-    removeLinkedList(&list, (pint *) 0x10, pintCompare);
-    removeLinkedList(&list, (pint *) 0x40, pintCompare);
-    removeLinkedList(&list, (pint *) 0x20, pintCompare);
-    removeLinkedList(&list, (pint *) 0x30, pintCompare);
-    removeLinkedList(&list, (pint *) 0x10, pintCompare);
+	removeLinkedList(&list, (pint *)0x10, pintCompare);
+	removeLinkedList(&list, (pint *)0x10, pintCompare);
+	removeLinkedList(&list, (pint *)0x40, pintCompare);
+	removeLinkedList(&list, (pint *)0x20, pintCompare);
+	removeLinkedList(&list, (pint *)0x30, pintCompare);
+	removeLinkedList(&list, (pint *)0x10, pintCompare);
 
-    destructLinkedListIter(&iter);
+	destructLinkedListIter(&iter);
 
-    destructLinkedList(&list);
+	destructLinkedList(&list);
 
 #elif TEST
-    // for (s32 i = 1; i < argc; i++)
-        // printf("[%d]: %s\n", i, argv[i]);
+	// for (s32 i = 1; i < argc; i++)
+		// printf("[%d]: %s\n", i, argv[i]);
 
-    // Test string method.
+	// Test string method.
 
-    File file;
+	File file;
 
-    constructString(&file.path, "../MakefileGenerator/src/main.c");
+	constructString(&file.path, "../MakefileGenerator/src/main.c");
 
-    file.op = OP_READ;
-    file.isDir = False;
-    file.file = NULL;
+	file.op = OP_READ;
+	file.isDir = False;
+	file.file = NULL;
 
-    // printf("Exists: %u\n", checkIfFileExists("../MakefileGenerator/src/main.c"));
+	// printf("Exists: %u\n", checkIfFileExists("../MakefileGenerator/src/main.c"));
 
-    if (openFile(&file)) {
-        goto END;
-    }
+	if (openFile(&file)) {
+		goto END;
+	}
 
-    u32 buf;
-    u32 count = 0;
-    while ((buf = readByteFromFile(&file)) != EOF) {
-        printf("%c", (char) buf & 0xFF);
+	u32 buf;
+	u32 count = 0;
+	while ((buf = readByteFromFile(&file)) != EOF) {
+		printf("%c", (char)buf & 0xFF);
 
-        if (++count == 50) {
-            count = 0;
-            putchar('\n');
-        }
-    }
+		if (++count == 50) {
+			count = 0;
+			putchar('\n');
+		}
+	}
 
-    closeFile(&file);
+	closeFile(&file);
 
-    desrtuctString(&file.path);
+	desrtuctString(&file.path);
 
-    Dir dir;
-    constructString(&dir.path, "../MakefileGenerator/src/.");
+	Dir dir;
+	constructString(&dir.path, "../MakefileGenerator/src/.");
 
-    openDir(&dir);
-    readDir(&dir);
+	openDir(&dir);
+	readDir(&dir);
 
-    ArrayListIterator iter;
-    constructArrayListIterator(&iter, &dir.branches);
+	ArrayListIterator iter;
+	constructArrayListIterator(&iter, &dir.branches);
 
-    while (hasNextArrayListIterator(&iter)) {
-        String *fileName = nextArrayListIterator(&iter);
-        printf("%s\n", fileName->cstr);
-    }
+	while (hasNextArrayListIterator(&iter)) {
+		String *fileName = nextArrayListIterator(&iter);
+		printf("%s\n", fileName->cstr);
+	}
 
-    closeDir(&dir);
+	closeDir(&dir);
 
-    desrtuctString(&dir.path);
+	desrtuctString(&dir.path);
 
-    END:;
+END:;
 #elif 0
 
-    String this;
-    constructString(&this, "Hello World!");
+	String this;
+	constructString(&this, "Hello World!");
 
-    String comp;
-    constructString(&comp, "Hello");
+	String comp;
+	constructString(&comp, "Hello");
 
-    printString(&this);
-    printString(&comp);
+	printString(&this);
+	printString(&comp);
 
-    const b32 result = stringStartsWith(&this, &comp);
-    printf("Result %u\n", result);
+	const b32 result = stringStartsWith(&this, &comp);
+	printf("Result %u\n", result);
 
-    desrtuctString(&this);
-    desrtuctString(&comp);
+	desrtuctString(&this);
+	desrtuctString(&comp);
 
 #else
-    IFlags flags;
+	IFlags flags;
 
-    std::vector<SourceFile> sourceFiles;
+	std::vector<SourceFile> sourceFiles;
 
-    if (!interpretArgs((const u32) argc, argv, sourceFiles, flags)) {
-        std::cout << "Error collecting source flags...\n";
-    }
+	if (!interpretArgs((const u32)argc, argv, sourceFiles, flags)) {
+		std::cout << "Error collecting source flags...\n";
+		exit(EXIT_FAILURE);
+	}
 
-    else {
-        // printf("Collecting source files success!!\n");
-        std::cout << "Collecting source files success!!\n";
+	std::cout << "Collecting source files success!!\n";
 
-        u32 fileNum = 0;
-        // Iter iter;
+	u32 fileNum = 0;
+	// Iter iter;
 
 #if 0
-        constructArrayListIterator(&iter, &sourceFiles);
-        printf("Files:\n");
-        while (hasNextArrayListIterator(&iter)) {
-            SourceFile *sourceFile = (SourceFile *) nextArrayListIterator(&iter);
-            printf("\t[%u]: %s\n", ++fileNum, sourceFile->fileName.cstr);
-            // free(sourceFile->fileName.cstr);
-        }
+	constructArrayListIterator(&iter, &sourceFiles);
+	printf("Files:\n");
+	while (hasNextArrayListIterator(&iter)) {
+		SourceFile *sourceFile = (SourceFile *)nextArrayListIterator(&iter);
+		printf("\t[%u]: %s\n", ++fileNum, sourceFile->fileName.cstr);
+		// free(sourceFile->fileName.cstr);
+	}
 #elif 1
-        for (auto &sourceFile : sourceFiles) {
-            printf("\t[%u]: %s\n", ++fileNum, sourceFile.fileName.c_str());
-        }
+	for (auto &sourceFile : sourceFiles) {
+		std::printf("\t[%u]: %s\n", ++fileNum, sourceFile.fileName.c_str());
+}
 #endif
 
-        SRC source("makefile", sourceFiles);
+	SRC source("makefile", sourceFiles);
 
-        writeToFile(source, flags);
-    }
+	writeToFile(source, flags);
 #endif
-    pause();
-    return 0;
+	// pause();
+	return 0;
 }

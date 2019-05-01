@@ -167,6 +167,29 @@ void writeMakefileHeaderVars(SRC &source, IFlags &flags, const FILE *makefile) {
         }
     }
 
+	if (flags.pedantic != INTERPRETER_INVALID_FLAG) {
+		if (needsSpace) {
+			writeCString(" -pedantic", makefile);
+			source.flags += " -pedantic";
+
+			if (flags.pedantic == 2) {
+				writeCString("-errors", makefile);
+				source.flags += "-errors";
+			}
+		}
+
+		else {
+			needsSpace = True;
+			writeCString("-pedantic", makefile);
+			source.flags += "-pedantic";
+
+			if (flags.pedantic == 2) {
+				writeCString("-errors", makefile);
+				source.flags += "-errors";
+			}
+		}
+	}
+
     if (flags.stdver != INTERPRETER_INVALID_FLAG) {
         std::string stdver = std::to_string(flags.stdver);
 

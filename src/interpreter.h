@@ -34,7 +34,7 @@
 
 #define INTERPRETER_INVALID_FLAG 0x80
 
-typedef u8 flag_t;
+using flag_t = u8;
 
 typedef enum OptimizationLevel {
     OPT_INVALID = 0x80, OPT_DEBUG = 0, OPT_OFF = 1, OPT_LOW = 2, OPT_MED = 3, OPT_HIGH = 4
@@ -51,6 +51,7 @@ struct IFlags {
     flag_t wall;
     flag_t wextra;
     flag_t werror;
+	flag_t pedantic;
     flag_t stdver;
     flag_t cmode;
     std::vector<std::string> flags;
