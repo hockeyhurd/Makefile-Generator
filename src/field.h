@@ -55,7 +55,12 @@ public:
 
 	virtual b32 apply(const std::string &, IFlags &) = 0;
 
+	b32 stringStartsWith(const std::string &);
+	b32 stringStartsWith(std::string &&);
+
 };
+
+b32 stringStartsWith(const std::string &, const std::string &);
 
 #endif // !MAKEGEN_FIELD_H
 

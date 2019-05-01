@@ -22,43 +22,26 @@
 * SOFTWARE.
 */
 
-#include "libs.h"
+/**
+ * @author hockeyhurd
+ * @version 2019-05-01
+ */
 
-FieldStaticLibs::FieldStaticLibs() : Field("-static") {
+#pragma once
 
-}
+#ifndef MAKEFILEGENERATOR_STDVER_H
+#define MAKEFILEGENERATOR_STDVER_H
 
-b32 FieldStaticLibs::apply(const std::string &arg, IFlags &flags) {
-	if (flags.outputType == OutputType::EMPTY)
-		flags.outputType = OutputType::STATIC;
-	else
-		return False;
+#include "field.h"
 
-	return True;
-}
+class FieldStdVer : public Field {
 
-FieldSharedLibs::FieldSharedLibs() : Field("-shared") {
+public:
 
-}
+    FieldStdVer();
+    ~FieldStdVer() = default;
 
-b32 FieldSharedLibs::apply(const std::string &arg, IFlags &flags) {
-	if (flags.outputType == OutputType::EMPTY)
-		flags.outputType = OutputType::SHARED;
-	else
-		return False;
+    b32 apply(const std::string &, IFlags &);
+};
 
-	return True;
-}
-
-FieldExe::FieldExe() : Field("-exe") {
-
-}
-
-b32 FieldExe::apply(const std::string &arg, IFlags &flags) {
-	if (flags.outputType == OutputType::EMPTY)
-		flags.outputType = OutputType::EXE;
-	else
-		return False;
-
-	return True;
-}
+#endif //MAKEFILEGENERATOR_STDVER_H

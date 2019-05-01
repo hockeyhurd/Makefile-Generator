@@ -55,3 +55,23 @@ Field &Field::operator= (Field &&other) {
 std::string &Field::getField() const {
 	return const_cast<std::string &>(field);
 }
+
+b32 Field::stringStartsWith(const std::string &arg) {
+	return ::stringStartsWith(arg, field);
+}
+
+b32 Field::stringStartsWith(std::string &&arg) {
+	return stringStartsWith(arg);
+}
+
+b32 stringStartsWith(const std::string &arg, const std::string &field) {
+    if (arg.size() < field.size())
+        return False;
+
+    for (std::size_t i = 0; i < field.size(); i++) {
+        if (field[i] != arg[i])
+            return False;
+    }
+
+    return True;
+}

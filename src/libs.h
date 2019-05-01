@@ -29,23 +29,34 @@
 
 #include "field.h"
 
-class StaticLibs : public Field {
+class FieldStaticLibs : public Field {
 
 public:
 
-	StaticLibs();
-	~StaticLibs() = default;
+	FieldStaticLibs();
+	~FieldStaticLibs() = default;
 
 	b32 apply(const std::string &, IFlags &);
 
 };
 
-class SharedLibs : public Field {
+class FieldSharedLibs : public Field {
 
 public:
 
-	SharedLibs();
-	~SharedLibs() = default;
+	FieldSharedLibs();
+	~FieldSharedLibs() = default;
+
+	b32 apply(const std::string &, IFlags &);
+
+};
+
+class FieldExe : public Field {
+
+public:
+
+	FieldExe();
+	~FieldExe() = default;
 
 	b32 apply(const std::string &, IFlags &);
 

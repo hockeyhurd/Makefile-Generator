@@ -22,43 +22,42 @@
 * SOFTWARE.
 */
 
-#include "libs.h"
+/**
+ * @author hockeyhurd
+ * @version 2019-05-01
+ */
 
-FieldStaticLibs::FieldStaticLibs() : Field("-static") {
+#include "stdver.h"
+#include "string.h"
 
-}
-
-b32 FieldStaticLibs::apply(const std::string &arg, IFlags &flags) {
-	if (flags.outputType == OutputType::EMPTY)
-		flags.outputType = OutputType::STATIC;
-	else
-		return False;
-
-	return True;
-}
-
-FieldSharedLibs::FieldSharedLibs() : Field("-shared") {
+FieldStdVer::FieldStdVer() : Field("-std=c") {
 
 }
 
-b32 FieldSharedLibs::apply(const std::string &arg, IFlags &flags) {
-	if (flags.outputType == OutputType::EMPTY)
-		flags.outputType = OutputType::SHARED;
-	else
-		return False;
+b32 FieldStdVer::apply(const std::string &arg, IFlags &flags) {
+    if (arg.size() == 8 || arg.size() == 10) {
+        static const std::string flagCheck = "-std=c";
 
-	return True;
-}
+        if (!::stringStartsWith(arg, field)) {
+            return False;
+        }
 
-FieldExe::FieldExe() : Field("-exe") {
+        u32 i = 8;
 
-}
+        if (arg.size() == 10) {
+            if (arg[i++] != '+' || arg[i++] != '+')
+                return False;
+        }
 
-b32 FieldExe::apply(const std::string &arg, IFlags &flags) {
-	if (flags.outputType == OutputType::EMPTY)
-		flags.outputType = OutputType::EXE;
-	else
-		return False;
+        String temp;
+        temp.cstr = (char *) &arg.c_str()[i];
+        temp.len = stringLength(temp.cstr);
 
-	return True;
+        u32 output = 0;
+
+        parseUInt(&temp, &output);
+        flags.stdver = (flag_t) (output & 0xFF);
+    }
+
+    return True;
 }
