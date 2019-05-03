@@ -40,13 +40,17 @@
 #define DEFAULT_C_STD 99u
 #endif // !DEFAULT_C_STD
 
+#define INTERPRETER_USE_BETA_DECODE 1
+
 extern void myFree(void *, const char *);
 extern void *myMalloc(const u32, const char *);
 
+#if !INTERPRETER_USE_BETA_DECODE
 static const char *flagVerCheck = "-std=c";
 static const char *flagNameCheck = "-name=";
 static const u32 flagNameCheckLen = 6;
 static const u32 flagVerCheckLen = 6;
+#endif
 
 static void loadDefaultEnvironment(std::vector<SourceFile> &, IFlags &);
 
@@ -61,7 +65,7 @@ IFlags::IFlags(const OutputType outputType, std::string &&outputName) : outputTy
 }
 
 b32 IFlags::decode(const std::string &arg) {
-#if 0
+#if !INTERPRETER_USE_BETA_DECODE
 	static const std::string temp = "-l";
 
 	if (arg == "-Wall")
