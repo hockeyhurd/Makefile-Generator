@@ -31,6 +31,7 @@
 #include "stdver.h"
 #include "warnings.h"
 
+#include <algorithm>
 #include <cstring>
 #include <memory>
 #include <vector>
@@ -50,6 +51,8 @@ static const u32 flagVerCheckLen = 6;
 static void loadDefaultEnvironment(std::vector<SourceFile> &, IFlags &);
 
 static void fillFieldVec(std::vector<Field *> &);
+static Field *findField(const std::string &, std::vector<Field *> &);
+static Field *binSearch(const std::string &, std::vector<Field *> &, const size_t, const size_t);
 
 IFlags::IFlags(const OutputType outputType, std::string &&outputName) : outputType(outputType), outputName(outputName), optLevel(OPT_INVALID), wall(INTERPRETER_INVALID_FLAG),
 	wextra(INTERPRETER_INVALID_FLAG), werror(INTERPRETER_INVALID_FLAG), pedantic(INTERPRETER_INVALID_FLAG) , stdver(INTERPRETER_INVALID_FLAG), cmode(INTERPRETER_INVALID_FLAG) {
@@ -179,12 +182,21 @@ b32 IFlags::decode(const std::string &arg) {
 		fillFieldVec(fieldVec);
 	}
 
+#if 0
 	for (auto &fieldPtr : fieldVec) {
 		if (fieldPtr->stringStartsWith(arg)) {
 			fieldPtr->apply(arg, *this);
 			break;
 		}
 	}
+#else
+	Field *field = findField(arg, fieldVec);
+
+	if (field == nullptr)
+		return False;
+
+	field->apply(arg, *this);
+#endif
 
 	return True;
 #endif
@@ -210,6 +222,40 @@ void fillFieldVec(std::vector<Field *> &fieldVec) {
 	fieldVec.emplace_back(&optLevel);
 	fieldVec.emplace_back(&stdVer);
 	fieldVec.emplace_back(&warnings);
+
+	static auto sortFunc = [](Field *left, Field *right) {
+		return left->getField() < right->getField();
+	};
+
+	std::sort(fieldVec.begin(), fieldVec.end(), sortFunc);
+	// std::sort(fieldVec.begin(), fieldVec.end(), sortFunc2);
+}
+
+Field *findField(const std::string &arg, std::vector<Field *> &fieldVec) {
+	const size_t low = 0;
+	const size_t high = fieldVec.size();
+	
+	Field *result = binSearch(arg, fieldVec, low, high);
+
+	return result;
+}
+
+Field *binSearch(const std::string &arg, std::vector<Field *> &fieldVec, const size_t low, const size_t high) {
+	if (high >= low) {
+		const size_t mid = low + (high - low) / 2;
+		const auto &temp = fieldVec[mid];
+
+		if (temp->stringStartsWith(arg)) {
+			return temp;
+		}
+
+		else if (arg < temp->getField())
+			return binSearch(arg, fieldVec, low, mid - 1);
+
+		return binSearch(arg, fieldVec, mid + 1, high);
+	}
+
+	return nullptr;
 }
 
 void loadDefaultEnvironment(std::vector<SourceFile> &sourceFiles, IFlags &flags) {
