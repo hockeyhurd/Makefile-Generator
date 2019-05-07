@@ -53,6 +53,25 @@ void printString(const String *string) {
 
 s32 main(s32 argc, char **argv) {
 #if 0
+	std::cout << "static u8 charDigitLookup[256] = {\n";
+
+	for (u32 i = 0; i < 256; i++) {
+		if (i >= '0' && i <= '9')
+			std::cout << "    " << (i + '0') << ",\n";
+		else if (i >= 'a' && i <= 'f')
+			std::cout << "    " << (i + 'a') << ",\n";
+		else if (i >= 'A' && i <= 'F')
+			std::cout << "    " << (i + 'A') << ",\n";
+		else
+			std::cout << "    0,\n";
+	}
+
+	std::cout << "};\n";
+
+	return 0;
+#endif
+
+#if 0
 
 	FilterList filter;
 	filter.whiteListMode = True;
