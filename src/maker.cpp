@@ -42,12 +42,12 @@ static void writeMakefileModules(SRC &, IFlags &, const FILE *);
 // static void compileFlagsToString(String *, const IFlags *);
 static b32 isValidSTDVersion(const b32, const u32);
 
-SRC::SRC(std::string fileName, std::string flags, std::vector<SourceFile> &sourceFiles) : fileName(std::move(fileName)),
-    flags(std::move(flags)), sourceFiles(sourceFiles) {
+SRC::SRC(const std::string &fileName, const std::string &flags, std::vector<SourceFile> &sourceFiles) : fileName(fileName),
+    flags(flags), sourceFiles(sourceFiles) {
 
 }
 
-SRC::SRC(std::string fileName, std::vector<SourceFile> &sourceFiles) : fileName(std::move(fileName)),
+SRC::SRC(const std::string &fileName, std::vector<SourceFile> &sourceFiles) : fileName(fileName),
     flags(""), sourceFiles(sourceFiles) {
 
 }

@@ -22,36 +22,18 @@
 * SOFTWARE.
 */
 
-#pragma once
+#include "makefile_name.h"
 
-#ifndef MAKEGEN_MAKER_H
-#define MAKEGEN_MAKER_H
+FieldMakefileName::FieldMakefileName() : Field("-make-name=") {
 
-#include <vector>
-#include <string>
+}
 
-#include "source.h"
-#include "interpreter.h"
+b32 FieldMakefileName::apply(const std::string &arg, IFlags &flags) {
+	if (!::stringStartsWith(arg, field))
+		return False;
 
-#define CC_VAR "$(CC)"
-#define CC_FLAGS_VAR "$(CC_FLAGS)"
-#define CPP_VAR "$(CPP)"
-#define MAKEFILE_VAR "makefile"
-#define DEFAULT_FLAGS "$(CC_VER) -g -Wall"
-#define DEFAULT_C_STD 99u
-#define DEFAULT_CPP_STD 98u
+	// name starts at index 11.
+	flags.makefileName = arg.substr(11);
 
-typedef struct SRC {
-    std::string fileName;
-    std::string flags;
-    // u32 stdver;
-    // b32 cmode;
-    std::vector<SourceFile> &sourceFiles;
-
-    SRC(const std::string &, const std::string &, std::vector<SourceFile> &);
-    SRC(const std::string &, std::vector<SourceFile> &);
-} SRC;
-
-b32 writeToFile(SRC &, IFlags &);
-
-#endif //MAKEGEN_MAKER_H
+	return flags.makefileName.empty() ? False : True;
+}

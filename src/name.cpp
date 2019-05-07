@@ -39,5 +39,6 @@ b32 FieldName::apply(const std::string &arg, IFlags &flags) {
 
     // name starts at index 6.
     flags.outputName = arg.substr(6);
-    return True;
+
+    return flags.outputName.empty() ? False : True;
 }

@@ -46,6 +46,7 @@ enum class OutputType {
 
 struct IFlags {
     OutputType outputType;
+	std::string makefileName;
     std::string outputName;
     OptLevel optLevel;
     flag_t wall;
@@ -56,7 +57,7 @@ struct IFlags {
     flag_t cmode;
     std::vector<std::string> flags;
 
-    explicit IFlags(const OutputType = OutputType::EMPTY, std::string && = "");
+    explicit IFlags(const OutputType = OutputType::EMPTY, std::string && = "makefile", std::string && = "");
 
     b32 decode(const std::string &);
 };

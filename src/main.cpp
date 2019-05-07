@@ -27,19 +27,11 @@
 
 #include "interpreter.h"
 #include "maker.h"
-#include "filesystem.h"
+// #include "filesystem.h"
 
 #ifdef WIN32
 #include <vld.h>
 #endif
-
-static void pause(void) {
-	// system("PAUSE");
-#if OS_WIN
-	printf("Press enter to continue.\n");
-	getchar();
-#endif
-}
 
 #define TEST 0
 
@@ -52,167 +44,6 @@ void printString(const String *string) {
 #endif
 
 s32 main(s32 argc, char **argv) {
-#if 0
-	std::cout << "static u8 charDigitLookup[256] = {\n";
-
-	for (u32 i = 0; i < 256; i++) {
-		if (i >= '0' && i <= '9')
-			std::cout << "    " << (i + '0') << ",\n";
-		else if (i >= 'a' && i <= 'f')
-			std::cout << "    " << (i + 'a') << ",\n";
-		else if (i >= 'A' && i <= 'F')
-			std::cout << "    " << (i + 'A') << ",\n";
-		else
-			std::cout << "    0,\n";
-	}
-
-	std::cout << "};\n";
-
-	return 0;
-#endif
-
-#if 0
-
-	FilterList filter;
-	filter.whiteListMode = True;
-
-	constructArrayList(&filter.descriptor, 0x10, sizeof(u32));
-
-	for (u32 i = 0; i <= 10; i += 2) {
-		addArrayList(&filter.descriptor, (const void *)(pint)i);
-	}
-
-	u32 input[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-	const u32 len = sizeof(input) / sizeof(input[0]);
-	u32 output[sizeof(input) / sizeof(input[0])] = { 0 };
-
-	const u32 numElementsFound = filterArray((void **)input, (void **)output, (const pint)len, (const u32) sizeof(input[0]), &filter, intCompare);
-
-	puts("Output:\n");
-	for (u32 i = 0; i < numElementsFound; i++) {
-		printf("[%u]: %u\n", i, output[i]);
-	}
-
-	destructArrayList(&filter.descriptor);
-
-#elif 0
-
-	LinkedList list;
-	constructLinkedList(&list);
-
-	addLinkedList(&list, (pint *)0x10);
-	addLinkedList(&list, (pint *)0x20);
-	addLinkedList(&list, (pint *)0x30);
-	addLinkedList(&list, (pint *)0x40);
-
-	LinkedListIter iter;
-
-#if 1
-	constructLinkedListIter(&iter, &list, True);
-
-	while (hasNextLinkedListIter(&iter)) {
-		void *valAsPtr = nextLinkedListIter(&iter);
-		const pint value = *(pint *)&valAsPtr;
-
-		printf("Value: %lu\n", value);
-	}
-
-#else
-
-	constructLinkedListIter(&iter, &list, False);
-
-	while (hasPrevLinkedListIter(&iter)) {
-		void *valAsPtr = prevLinkedListIter(&iter);
-		const pint value = *(pint *)&valAsPtr;
-
-		printf("Value: %lu\n", value);
-	}
-
-#endif
-
-	removeLinkedList(&list, (pint *)0x10, pintCompare);
-	removeLinkedList(&list, (pint *)0x10, pintCompare);
-	removeLinkedList(&list, (pint *)0x40, pintCompare);
-	removeLinkedList(&list, (pint *)0x20, pintCompare);
-	removeLinkedList(&list, (pint *)0x30, pintCompare);
-	removeLinkedList(&list, (pint *)0x10, pintCompare);
-
-	destructLinkedListIter(&iter);
-
-	destructLinkedList(&list);
-
-#elif TEST
-	// for (s32 i = 1; i < argc; i++)
-		// printf("[%d]: %s\n", i, argv[i]);
-
-	// Test string method.
-
-	File file;
-
-	constructString(&file.path, "../MakefileGenerator/src/main.c");
-
-	file.op = OP_READ;
-	file.isDir = False;
-	file.file = NULL;
-
-	// printf("Exists: %u\n", checkIfFileExists("../MakefileGenerator/src/main.c"));
-
-	if (openFile(&file)) {
-		goto END;
-	}
-
-	u32 buf;
-	u32 count = 0;
-	while ((buf = readByteFromFile(&file)) != EOF) {
-		printf("%c", (char)buf & 0xFF);
-
-		if (++count == 50) {
-			count = 0;
-			putchar('\n');
-		}
-	}
-
-	closeFile(&file);
-
-	desrtuctString(&file.path);
-
-	Dir dir;
-	constructString(&dir.path, "../MakefileGenerator/src/.");
-
-	openDir(&dir);
-	readDir(&dir);
-
-	ArrayListIterator iter;
-	constructArrayListIterator(&iter, &dir.branches);
-
-	while (hasNextArrayListIterator(&iter)) {
-		String *fileName = nextArrayListIterator(&iter);
-		printf("%s\n", fileName->cstr);
-	}
-
-	closeDir(&dir);
-
-	desrtuctString(&dir.path);
-
-END:;
-#elif 0
-
-	String this;
-	constructString(&this, "Hello World!");
-
-	String comp;
-	constructString(&comp, "Hello");
-
-	printString(&this);
-	printString(&comp);
-
-	const b32 result = stringStartsWith(&this, &comp);
-	printf("Result %u\n", result);
-
-	desrtuctString(&this);
-	desrtuctString(&comp);
-
-#else
 	IFlags flags;
 
 	std::vector<SourceFile> sourceFiles;
@@ -225,7 +56,6 @@ END:;
 	std::cout << "Collecting source files success!!\n";
 
 	u32 fileNum = 0;
-	// Iter iter;
 
 #if 0
 	constructArrayListIterator(&iter, &sourceFiles);
@@ -241,10 +71,14 @@ END:;
 }
 #endif
 
-	SRC source("makefile", sourceFiles);
+	SRC source(flags.makefileName, sourceFiles);
 
-	writeToFile(source, flags);
-#endif
-	// pause();
+	const b32 result = writeToFile(source, flags);
+
+	if (!result) {
+		std::cout << "ERROR: Writing \"" << flags.makefileName << "\"\n";
+		exit(EXIT_FAILURE);
+	}
+
 	return 0;
 }

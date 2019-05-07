@@ -24,34 +24,20 @@
 
 #pragma once
 
-#ifndef MAKEGEN_MAKER_H
-#define MAKEGEN_MAKER_H
+#ifndef MAKEGEN_MAKEFILE_NAME_H
+#define MAKEGEN_MAKEFILE_NAME_H
 
-#include <vector>
-#include <string>
+#include "field.h"
 
-#include "source.h"
-#include "interpreter.h"
+class FieldMakefileName : public Field {
 
-#define CC_VAR "$(CC)"
-#define CC_FLAGS_VAR "$(CC_FLAGS)"
-#define CPP_VAR "$(CPP)"
-#define MAKEFILE_VAR "makefile"
-#define DEFAULT_FLAGS "$(CC_VER) -g -Wall"
-#define DEFAULT_C_STD 99u
-#define DEFAULT_CPP_STD 98u
+public:
 
-typedef struct SRC {
-    std::string fileName;
-    std::string flags;
-    // u32 stdver;
-    // b32 cmode;
-    std::vector<SourceFile> &sourceFiles;
+	FieldMakefileName();
+	~FieldMakefileName() = default;
 
-    SRC(const std::string &, const std::string &, std::vector<SourceFile> &);
-    SRC(const std::string &, std::vector<SourceFile> &);
-} SRC;
+	b32 apply(const std::string &, IFlags &) override;
 
-b32 writeToFile(SRC &, IFlags &);
+};
 
-#endif //MAKEGEN_MAKER_H
+#endif //!MAKEGEN_MAKEFILE_NAME_H

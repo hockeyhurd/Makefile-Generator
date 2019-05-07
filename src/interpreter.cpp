@@ -26,6 +26,7 @@
 #include "string.h"
 #include "libs.h"
 #include "link.h"
+#include "makefile_name.h"
 #include "name.h"
 #include "optimization_level.h"
 #include "stdver.h"
@@ -58,7 +59,7 @@ static void fillFieldVec(std::vector<Field *> &);
 static Field *findField(const std::string &, std::vector<Field *> &);
 static Field *binSearch(const std::string &, std::vector<Field *> &, const size_t, const size_t);
 
-IFlags::IFlags(const OutputType outputType, std::string &&outputName) : outputType(outputType), outputName(outputName), optLevel(OPT_INVALID), wall(INTERPRETER_INVALID_FLAG),
+IFlags::IFlags(const OutputType outputType, std::string &&makefileName, std::string &&outputName) : outputType(outputType), makefileName(makefileName), outputName(outputName), optLevel(OPT_INVALID), wall(INTERPRETER_INVALID_FLAG),
 	wextra(INTERPRETER_INVALID_FLAG), werror(INTERPRETER_INVALID_FLAG), pedantic(INTERPRETER_INVALID_FLAG) , stdver(INTERPRETER_INVALID_FLAG), cmode(INTERPRETER_INVALID_FLAG) {
 
 	flags.reserve(0x10);
@@ -213,6 +214,7 @@ void fillFieldVec(std::vector<Field *> &fieldVec) {
 	static FieldLink link;
 	static FieldName name;
 	static FieldDebugLevel debugLevel;
+	static FieldMakefileName makefileName;
 	static FieldOptimizationLevel optLevel;
 	static FieldStdVer stdVer;
 	static FieldWarnings warnings;
@@ -223,6 +225,7 @@ void fillFieldVec(std::vector<Field *> &fieldVec) {
 	fieldVec.emplace_back(&name);
 	fieldVec.emplace_back(&link);
 	fieldVec.emplace_back(&debugLevel);
+	fieldVec.emplace_back(&makefileName);
 	fieldVec.emplace_back(&optLevel);
 	fieldVec.emplace_back(&stdVer);
 	fieldVec.emplace_back(&warnings);
