@@ -1,6 +1,6 @@
 CC = g++
-CC_FLAGS = -pipe -O2 -Wall -pedantic -std=c++11
-all: link main.o carraylist.o field.o filesystem.o interpreter.o libs.o link.o makefile_name.o maker.o name.o optimization_level.o source.o stdver.o string.o types.o warnings.o 
+CC_FLAGS = -pipe -O2 -Wall -pedantic -std=c++14
+all: link main.o carraylist.o field.o filesystem.o interpreter.o libs.o link.o makefile_name.o maker.o name.o optimization_level.o source.o stdver.o string.o types.o warnings.o other_fields.o 
 
 main.o: main.cpp
 	$(CC) $(CC_FLAGS) -c main.cpp
@@ -34,7 +34,9 @@ types.o: types.cpp
 	$(CC) $(CC_FLAGS) -c types.cpp
 warnings.o: warnings.cpp
 	$(CC) $(CC_FLAGS) -c warnings.cpp
-link: main.o carraylist.o field.o filesystem.o interpreter.o libs.o link.o makefile_name.o maker.o name.o optimization_level.o source.o stdver.o string.o types.o warnings.o 
-	$(CC) $(CC_FLAGS) -o makegen main.o carraylist.o field.o filesystem.o interpreter.o libs.o link.o makefile_name.o maker.o name.o optimization_level.o source.o stdver.o string.o types.o warnings.o 
+other_fields.o: other_fields.cpp
+	$(CC) $(CC_FLAGS) -c other_fields.cpp
+link: main.o carraylist.o field.o filesystem.o interpreter.o libs.o link.o makefile_name.o maker.o name.o optimization_level.o source.o stdver.o string.o types.o warnings.o other_fields.o 
+	$(CC) $(CC_FLAGS) -o makegen main.o carraylist.o field.o filesystem.o interpreter.o libs.o link.o makefile_name.o maker.o name.o optimization_level.o source.o stdver.o string.o types.o warnings.o other_fields.o 
 clean:
 	rm -f *.o makegen
