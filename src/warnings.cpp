@@ -40,3 +40,18 @@ b32 FieldWarnings::apply(const std::string &arg, IFlags &flags) {
 
 	return True;
 }
+
+FieldPedantic::FieldPedantic() : Field("-pedantic") {
+
+}
+
+b32 FieldPedantic::apply(const std::string &args, IFlags &flags) {
+	if (args == "-pedantic")
+		flags.pedantic = 1;
+	else if (args == "-pedantic-errors")
+		flags.pedantic = 2;
+	else
+		return False;
+
+	return True;
+}

@@ -29,6 +29,7 @@
 #include "makefile_name.h"
 #include "name.h"
 #include "optimization_level.h"
+#include "other_fields.h"
 #include "stdver.h"
 #include "warnings.h"
 
@@ -218,6 +219,8 @@ void fillFieldVec(std::vector<Field *> &fieldVec) {
 	static FieldOptimizationLevel optLevel;
 	static FieldStdVer stdVer;
 	static FieldWarnings warnings;
+	static FieldPedantic pedantics;
+	static FieldPipe pipe;
 
 	fieldVec.emplace_back(&sharedLibs);
 	fieldVec.emplace_back(&staticLibs);
@@ -229,6 +232,8 @@ void fillFieldVec(std::vector<Field *> &fieldVec) {
 	fieldVec.emplace_back(&optLevel);
 	fieldVec.emplace_back(&stdVer);
 	fieldVec.emplace_back(&warnings);
+	fieldVec.emplace_back(&pedantics);
+	fieldVec.emplace_back(&pipe);
 
 	static auto sortFunc = [](Field *left, Field *right) {
 		return left->getField() < right->getField();

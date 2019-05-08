@@ -314,7 +314,8 @@ extern "C" {
 		const u8 value = charDigitLookup[c];
 		return static_cast<u32>(value);
 #else
-		return static_cast<u32>(charDigitLookup[c]);
+		const auto index = static_cast<size_t>(c);
+		return static_cast<u32>(charDigitLookup[index]);
 #endif
 	}
 

@@ -22,34 +22,27 @@
 * SOFTWARE.
 */
 
+/**
+ * @author hockeyhurd
+ * @version 2019-05-08
+ */
+
 #pragma once
 
-#ifndef MAKEGEN_WARNINGS_H
-#define MAKEGEN_WARNINGS_H
+#ifndef MAKEFILEGENERATOR_OTHER_FIELDS_H
+#define MAKEFILEGENERATOR_OTHER_FIELDS_H
 
 #include "field.h"
 
-class FieldWarnings : public Field {
+class FieldPipe : public Field {
 
 public:
 
-	FieldWarnings();
-	~FieldWarnings() = default;
+    FieldPipe();
+    ~FieldPipe() = default;
 
-	b32 apply(const std::string &, IFlags &) override;
-
-};
-
-class FieldPedantic : public Field {
-
-public:
-
-	FieldPedantic();
-	~FieldPedantic() = default;
-
-	b32 apply(const std::string &, IFlags &) override;
+    b32 apply(const std::string &, IFlags &) override;
 
 };
 
-#endif // !MAKEGEN_WARNINGS_H
-
+#endif //MAKEFILEGENERATOR_OTHER_FIELDS_H
