@@ -27,28 +27,45 @@
 #ifndef MAKEGEN_INTERPRETER_H
 #define MAKEGEN_INTERPRETER_H
 
+#include <vector>
+#include <string>
+
 #include "source.h"
-#include "arraylist.h"
 
 #define INTERPRETER_INVALID_FLAG 0x80
 
-typedef u8 flag_t;
+using flag_t = u8;
 
 typedef enum OptimizationLevel {
     OPT_INVALID = 0x80, OPT_DEBUG = 0, OPT_OFF = 1, OPT_LOW = 2, OPT_MED = 3, OPT_HIGH = 4
 } OptLevel;
 
-typedef struct IFlags {
+enum class OutputType {
+    EMPTY = 0, EXE = 1, STATIC = 2, SHARED = 3
+};
+
+struct IFlags {
+    OutputType outputType;
+	std::string makefileName;
+    std::string outputName;
     OptLevel optLevel;
     flag_t wall;
+    flag_t wextra;
+    flag_t werror;
+	flag_t pedantic;
     flag_t stdver;
     flag_t cmode;
-    String outputName;
-    ArrayList flags;
-} IFlags;
+    std::vector<std::string> flags;
 
-void initIFlags(IFlags *);
-void freeIFlags(IFlags *);
+    explicit IFlags(const OutputType = OutputType::EMPTY, std::string && = "makefile", std::string && = "");
+
+    b32 decode(const std::string &);
+};
+
+#if 0
+void initIFlags(IFlags &);
+void freeIFlags(IFlags &);
+#endif
 
 /**
 *  Interprets command line arguments into gcc style compilation
@@ -63,6 +80,6 @@ void freeIFlags(IFlags *);
 *  @return Unsigned 32-bit int count of number of source files.  If any pointer is
 *       NULL, the function will return 0.
 */
-u32 interpretArgs(const u32, char **, ArrayList *, IFlags *);
+size_t interpretArgs(const u32, char **, std::vector<SourceFile> &, IFlags &);
 
 #endif //MAKEGEN_INTERPRETER_H

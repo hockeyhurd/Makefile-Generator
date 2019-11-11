@@ -22,58 +22,33 @@
 * SOFTWARE.
 */
 
-#pragma once
+#include "optimization_level.h"
 
-#ifndef STRING_H
-#define STRING_H
+FieldOptimizationLevel::FieldOptimizationLevel() : Field("-O") {
 
-#include "types.h"
-
-#include <string>
-
-#if 0
-#ifdef __cplusplus
-extern "C" {
-#endif
-#endif
-
-typedef struct String {
-    char *cstr;
-    u32 len;
-    // u32 capacity;
-} String;
-
-b32 isNum(const char);
-u32 charToNum(const char);
-u32 hashString(const char *);
-
-u32 stringLength(const char *);
-s32 stringCompare(const char *, const char *);
-b32 stringStartsWith(const String *, const String *);
-// b32 strcpy(const char *, const char *);
-b32 containsString(const String *, const String *);
-
-b32 parseUInt(const String *, u32 *);
-b32 parseInt(const String *, s32 *);
-b32 toString(String *, const s32);
-
-void constructString(String *, const char *);
-void desrtuctString(String *);
-
-void copyCString(String *, const char *);
-void copyString(String *, const String *);
-void moveString(String *, String *);
-
-void appendCString(String *src, const char *);
-
-#if 0
-#ifdef __cplusplus
 }
-#endif
-#endif
 
-b32 startsWith(const std::string &, const std::string &);
-b32 parseUInt(const std::string &, u32 &);
-b32 parseInt(const std::string &, s32 &);
+b32 FieldOptimizationLevel::apply(const std::string &arg, IFlags &flags) {
+	if (arg == "-O0")
+		flags.optLevel = OptLevel::OPT_OFF;
+	else if (arg == "-O1")
+		flags.optLevel = OptLevel::OPT_LOW;
+	else if (arg == "-O2")
+		flags.optLevel = OptLevel::OPT_MED;
+	else if (arg == "-O3")
+		flags.optLevel = OptLevel::OPT_HIGH;
+	else
+		return False;
 
-#endif // !STRING_H
+	return True;
+}
+
+FieldDebugLevel::FieldDebugLevel() : Field("-g") {
+
+}
+
+b32 FieldDebugLevel::apply(const std::string &arg, IFlags &flags) {
+	flags.optLevel = OptLevel::OPT_DEBUG;
+
+	return True;
+}

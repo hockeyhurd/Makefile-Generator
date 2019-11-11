@@ -22,29 +22,14 @@
 * SOFTWARE.
 */
 
-#include "stack.h"
+#include "link.h"
 
-void initStack(Stack *stack, const u32 sizeInBytes) {
-    constructArrayList(stack, 0x10, sizeInBytes);
+FieldLink::FieldLink() : Field("-l") {
+
 }
 
-void freeStack(Stack *stack) {
-    destructArrayList(stack);
-}
+b32 FieldLink::apply(const std::string &arg, IFlags &flags) {
+	flags.flags.emplace_back(arg);
 
-void pushStack(Stack *stack, void *data) {
-    addArrayList(stack, data);
-}
-
-void *peekStack(const Stack *stack) {
-    return stack != NULL && stack->len ? stack->arr[stack->len - 1] : NULL;
-}
-
-void popStack(Stack *stack, void **output) {
-    if (stack != NULL && stack->len) {
-        stack->len--;
-
-        if (output != NULL)
-            *output = stack->arr[stack->len];
-    }
+	return True;
 }

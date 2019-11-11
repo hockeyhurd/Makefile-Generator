@@ -24,56 +24,20 @@
 
 #pragma once
 
-#ifndef STRING_H
-#define STRING_H
+#ifndef MAKEGEN_LINK_H
+#define MAKEGEN_LINK_H
 
-#include "types.h"
+#include "field.h"
 
-#include <string>
+class FieldLink : public Field {
 
-#if 0
-#ifdef __cplusplus
-extern "C" {
-#endif
-#endif
+public:
 
-typedef struct String {
-    char *cstr;
-    u32 len;
-    // u32 capacity;
-} String;
+	FieldLink();
+	~FieldLink() = default;
 
-b32 isNum(const char);
-u32 charToNum(const char);
-u32 hashString(const char *);
+	b32 apply(const std::string &, IFlags &) override;
 
-u32 stringLength(const char *);
-s32 stringCompare(const char *, const char *);
-b32 stringStartsWith(const String *, const String *);
-// b32 strcpy(const char *, const char *);
-b32 containsString(const String *, const String *);
+};
 
-b32 parseUInt(const String *, u32 *);
-b32 parseInt(const String *, s32 *);
-b32 toString(String *, const s32);
-
-void constructString(String *, const char *);
-void desrtuctString(String *);
-
-void copyCString(String *, const char *);
-void copyString(String *, const String *);
-void moveString(String *, String *);
-
-void appendCString(String *src, const char *);
-
-#if 0
-#ifdef __cplusplus
-}
-#endif
-#endif
-
-b32 startsWith(const std::string &, const std::string &);
-b32 parseUInt(const std::string &, u32 &);
-b32 parseInt(const std::string &, s32 &);
-
-#endif // !STRING_H
+#endif //!MAKEGEN_LINK_H

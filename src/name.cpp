@@ -22,57 +22,23 @@
 * SOFTWARE.
 */
 
-#include "source.h"
+/**
+ * @author hockeyhurd
+ * @version 2019-05-01
+ */
 
-#ifndef MIN_FILE_LEN
-#define MIN_FILE_LEN 4u
-#endif
+#include "name.h"
 
-b32 isValidSourceFile(SourceFile *file, b32 *cmode) {
-    if (file->fileName.len < MIN_FILE_LEN)
+FieldName::FieldName() : Field("-name=") {
+
+}
+
+b32 FieldName::apply(const std::string &arg, IFlags &flags) {
+    if (!::stringStartsWith(arg, field))
         return False;
 
-    char *subString = NULL;
+    // name starts at index 6.
+    flags.outputName = arg.substr(6);
 
-    for (s32 i = file->fileName.len - 1; i >= 0; i--) {
-        if (file->fileName.cstr[i] == '.' && i + 1 < (s32) file->fileName.len) {
-            subString = &file->fileName.cstr[i + 1];
-            break;
-        }
-    }
-
-    if (subString == NULL)
-        return False;
-
-    if (!stringCompare(subString, "h")) {
-        file->fileType = HEADER;
-    }
-
-    else if (!stringCompare(subString, "hpp")) {
-        file->fileType = HEADER;
-        *cmode = False;
-    }
-
-    else if (!stringCompare(subString, "hxx")) {
-        file->fileType = HEADER;
-        *cmode = False;
-    }
-
-    else if (!stringCompare(subString, "c"))
-        file->fileType = SOURCE;
-
-    else if (!stringCompare(subString, "cpp")) {
-        file->fileType = SOURCE;
-        *cmode = False;
-    }
-
-    else if (!stringCompare(subString, "cxx")) {
-        file->fileType = SOURCE;
-        *cmode = False;
-    }
-
-    else
-        return False;
-
-    return True;
+    return flags.outputName.empty() ? False : True;
 }

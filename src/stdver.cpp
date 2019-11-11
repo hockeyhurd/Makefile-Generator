@@ -22,58 +22,42 @@
 * SOFTWARE.
 */
 
-#pragma once
+/**
+ * @author hockeyhurd
+ * @version 2019-05-01
+ */
 
-#ifndef STRING_H
-#define STRING_H
+#include "stdver.h"
+#include "string.h"
 
-#include "types.h"
+FieldStdVer::FieldStdVer() : Field("-std=c") {
 
-#include <string>
-
-#if 0
-#ifdef __cplusplus
-extern "C" {
-#endif
-#endif
-
-typedef struct String {
-    char *cstr;
-    u32 len;
-    // u32 capacity;
-} String;
-
-b32 isNum(const char);
-u32 charToNum(const char);
-u32 hashString(const char *);
-
-u32 stringLength(const char *);
-s32 stringCompare(const char *, const char *);
-b32 stringStartsWith(const String *, const String *);
-// b32 strcpy(const char *, const char *);
-b32 containsString(const String *, const String *);
-
-b32 parseUInt(const String *, u32 *);
-b32 parseInt(const String *, s32 *);
-b32 toString(String *, const s32);
-
-void constructString(String *, const char *);
-void desrtuctString(String *);
-
-void copyCString(String *, const char *);
-void copyString(String *, const String *);
-void moveString(String *, String *);
-
-void appendCString(String *src, const char *);
-
-#if 0
-#ifdef __cplusplus
 }
-#endif
-#endif
 
-b32 startsWith(const std::string &, const std::string &);
-b32 parseUInt(const std::string &, u32 &);
-b32 parseInt(const std::string &, s32 &);
+b32 FieldStdVer::apply(const std::string &arg, IFlags &flags) {
+    if (arg.size() == 8 || arg.size() == 10) {
+        static const std::string flagCheck = "-std=c";
 
-#endif // !STRING_H
+        if (!::stringStartsWith(arg, field)) {
+            return False;
+        }
+
+        u32 i = 6;
+
+        if (arg.size() == 10) {
+            if (arg[i++] != '+' || arg[i++] != '+')
+                return False;
+        }
+
+        String temp;
+        temp.cstr = (char *) &arg.c_str()[i];
+        temp.len = stringLength(temp.cstr);
+
+        u32 output = 0;
+
+        parseUInt(&temp, &output);
+        flags.stdver = (flag_t) (output & 0xFF);
+    }
+
+    return True;
+}

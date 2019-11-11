@@ -24,24 +24,20 @@
 
 #pragma once
 
-#ifndef STACK_H
-#define STACK_H
+#ifndef MAKEGEN_MAKEFILE_NAME_H
+#define MAKEGEN_MAKEFILE_NAME_H
 
-#include "arraylist.h"
+#include "field.h"
 
-#if 0
-typedef struct Stack {
-    ArrayList list;
-} Stack;
-#else
-typedef ArrayList Stack;
-#endif
+class FieldMakefileName : public Field {
 
-void initStack(Stack *, const u32);
-void freeStack(Stack *);
+public:
 
-void pushStack(Stack *, void *);
-void *peekStack(const Stack *);
-void popStack(Stack *, void **);
+	FieldMakefileName();
+	~FieldMakefileName() = default;
 
-#endif // !STACK_H
+	b32 apply(const std::string &, IFlags &) override;
+
+};
+
+#endif //!MAKEGEN_MAKEFILE_NAME_H

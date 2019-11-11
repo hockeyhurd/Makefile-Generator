@@ -24,56 +24,52 @@
 
 #pragma once
 
-#ifndef STRING_H
-#define STRING_H
+#ifndef MAKEGEN_FIELD_H
+#define MAKEGEN_FIELD_H
 
 #include "types.h"
+#include "interpreter.h"
 
 #include <string>
 
-#if 0
-#ifdef __cplusplus
-extern "C" {
-#endif
-#endif
+class Field {
 
-typedef struct String {
-    char *cstr;
-    u32 len;
-    // u32 capacity;
-} String;
+protected:
 
-b32 isNum(const char);
-u32 charToNum(const char);
-u32 hashString(const char *);
+	std::string field;
 
-u32 stringLength(const char *);
-s32 stringCompare(const char *, const char *);
-b32 stringStartsWith(const String *, const String *);
-// b32 strcpy(const char *, const char *);
-b32 containsString(const String *, const String *);
+	explicit Field(std::string &&);
+	explicit Field(const std::string &);
 
-b32 parseUInt(const String *, u32 *);
-b32 parseInt(const String *, s32 *);
-b32 toString(String *, const s32);
+public:
 
-void constructString(String *, const char *);
-void desrtuctString(String *);
+	Field(const Field &);
+	Field(Field &&);
 
-void copyCString(String *, const char *);
-void copyString(String *, const String *);
-void moveString(String *, String *);
+	Field &operator= (const Field &);
+	Field &operator= (Field &&);
 
-void appendCString(String *src, const char *);
+	virtual ~Field() = default;
 
-#if 0
-#ifdef __cplusplus
-}
-#endif
-#endif
+	std::string &getField() const;
 
-b32 startsWith(const std::string &, const std::string &);
-b32 parseUInt(const std::string &, u32 &);
-b32 parseInt(const std::string &, s32 &);
+	virtual b32 apply(const std::string &, IFlags &) = 0;
 
-#endif // !STRING_H
+	b32 stringStartsWith(const std::string &);
+	b32 stringStartsWith(std::string &&);
+
+	class FieldComparer {
+		
+	public:
+
+		// b32 operator< (const std::string &, const std::string &);
+		b32 operator() (const std::string &, const std::string &) const;
+
+	};
+	
+};
+
+b32 stringStartsWith(const std::string &, const std::string &);
+
+#endif // !MAKEGEN_FIELD_H
+

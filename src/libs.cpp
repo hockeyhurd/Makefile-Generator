@@ -22,58 +22,43 @@
 * SOFTWARE.
 */
 
-#pragma once
+#include "libs.h"
 
-#ifndef STRING_H
-#define STRING_H
+FieldStaticLibs::FieldStaticLibs() : Field("-static") {
 
-#include "types.h"
-
-#include <string>
-
-#if 0
-#ifdef __cplusplus
-extern "C" {
-#endif
-#endif
-
-typedef struct String {
-    char *cstr;
-    u32 len;
-    // u32 capacity;
-} String;
-
-b32 isNum(const char);
-u32 charToNum(const char);
-u32 hashString(const char *);
-
-u32 stringLength(const char *);
-s32 stringCompare(const char *, const char *);
-b32 stringStartsWith(const String *, const String *);
-// b32 strcpy(const char *, const char *);
-b32 containsString(const String *, const String *);
-
-b32 parseUInt(const String *, u32 *);
-b32 parseInt(const String *, s32 *);
-b32 toString(String *, const s32);
-
-void constructString(String *, const char *);
-void desrtuctString(String *);
-
-void copyCString(String *, const char *);
-void copyString(String *, const String *);
-void moveString(String *, String *);
-
-void appendCString(String *src, const char *);
-
-#if 0
-#ifdef __cplusplus
 }
-#endif
-#endif
 
-b32 startsWith(const std::string &, const std::string &);
-b32 parseUInt(const std::string &, u32 &);
-b32 parseInt(const std::string &, s32 &);
+b32 FieldStaticLibs::apply(const std::string &arg, IFlags &flags) {
+	if (flags.outputType == OutputType::EMPTY)
+		flags.outputType = OutputType::STATIC;
+	else
+		return False;
 
-#endif // !STRING_H
+	return True;
+}
+
+FieldSharedLibs::FieldSharedLibs() : Field("-shared") {
+
+}
+
+b32 FieldSharedLibs::apply(const std::string &arg, IFlags &flags) {
+	if (flags.outputType == OutputType::EMPTY)
+		flags.outputType = OutputType::SHARED;
+	else
+		return False;
+
+	return True;
+}
+
+FieldExe::FieldExe() : Field("-exe") {
+
+}
+
+b32 FieldExe::apply(const std::string &arg, IFlags &flags) {
+	if (flags.outputType == OutputType::EMPTY)
+		flags.outputType = OutputType::EXE;
+	else
+		return False;
+
+	return True;
+}

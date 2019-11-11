@@ -22,58 +22,18 @@
 * SOFTWARE.
 */
 
-#pragma once
+#include "makefile_name.h"
 
-#ifndef STRING_H
-#define STRING_H
+FieldMakefileName::FieldMakefileName() : Field("-make-name=") {
 
-#include "types.h"
-
-#include <string>
-
-#if 0
-#ifdef __cplusplus
-extern "C" {
-#endif
-#endif
-
-typedef struct String {
-    char *cstr;
-    u32 len;
-    // u32 capacity;
-} String;
-
-b32 isNum(const char);
-u32 charToNum(const char);
-u32 hashString(const char *);
-
-u32 stringLength(const char *);
-s32 stringCompare(const char *, const char *);
-b32 stringStartsWith(const String *, const String *);
-// b32 strcpy(const char *, const char *);
-b32 containsString(const String *, const String *);
-
-b32 parseUInt(const String *, u32 *);
-b32 parseInt(const String *, s32 *);
-b32 toString(String *, const s32);
-
-void constructString(String *, const char *);
-void desrtuctString(String *);
-
-void copyCString(String *, const char *);
-void copyString(String *, const String *);
-void moveString(String *, String *);
-
-void appendCString(String *src, const char *);
-
-#if 0
-#ifdef __cplusplus
 }
-#endif
-#endif
 
-b32 startsWith(const std::string &, const std::string &);
-b32 parseUInt(const std::string &, u32 &);
-b32 parseInt(const std::string &, s32 &);
+b32 FieldMakefileName::apply(const std::string &arg, IFlags &flags) {
+	if (!::stringStartsWith(arg, field))
+		return False;
 
-#endif // !STRING_H
+	// name starts at index 11.
+	flags.makefileName = arg.substr(11);
+
+	return flags.makefileName.empty() ? False : True;
+}
