@@ -2,6 +2,8 @@
 *.exe
 /tests
 *.dll
+*.so
+*.a
 *.vcxproj
 *.filters
 *.user

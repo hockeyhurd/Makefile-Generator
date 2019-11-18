@@ -17,7 +17,7 @@ namespace makegen
         dependencies.emplace_back(std::move(dependency));
     }
 
-    void Target::build(File &file, std::initializer_list<BuildOptions> buildOptions)
+    void Target::build(File &file, BuildOptions *buildOptions)
     {
         file << name.str();
         file << ':';
@@ -33,7 +33,7 @@ namespace makegen
 
         // file << buildOptions.getBuildConfig().str();
 
-        const auto len = buildOptions.size();
+        /*const auto len = buildOptions.size();
         std::initializer_list<BuildOptions>::size_type i = 0;
 
         for (auto &option : buildOptions)
@@ -42,7 +42,10 @@ namespace makegen
 
             if (i < len - 1)
                 file << ' ';
-        }
+        }*/
+
+        if (buildOptions != nullptr)
+            file << buildOptions->getBuildConfig().str();
 
         for (auto &dep : dependencies)
         {
@@ -57,7 +60,7 @@ namespace makegen
     {
     }
 
-    void AllTarget::build(File &file, std::initializer_list<BuildOptions> buildOptions)
+    void AllTarget::build(File &file, BuildOptions *buildOptions)
     {
         file << name.str();
         file << ':';
@@ -75,7 +78,7 @@ namespace makegen
     {
     }
 
-    void CleanTarget::build(File &file, std::initializer_list<BuildOptions> buildOptions)
+    void CleanTarget::build(File &file, BuildOptions *buildOptions)
     {
         file << name.str();
         file << ':';
@@ -85,7 +88,7 @@ namespace makegen
 
         // file << buildOptions.getBuildConfig().str();
 
-        const auto len = buildOptions.size();
+        /*const auto len = buildOptions.size();
         std::initializer_list<BuildOptions>::size_type i = 0;
 
         for (auto &option : buildOptions)
@@ -94,7 +97,10 @@ namespace makegen
 
             if (i < len - 1)
                 file << ' ';
-        }
+        }*/
+
+        if (buildOptions != nullptr)
+            file << buildOptions->getBuildConfig().str();
 
         for (auto &dep : dependencies)
         {

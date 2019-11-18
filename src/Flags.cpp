@@ -1,4 +1,5 @@
 #include "Flags.h"
+#include "File.h"
 
 namespace makegen
 {
@@ -16,6 +17,7 @@ namespace makegen
         return const_cast<String&>(key);
     }
 
+#if 0
     void Flag::setKey(const String &key)
     {
         this->key = key;
@@ -25,6 +27,7 @@ namespace makegen
     {
         this->key = std::move(key);
     }
+#endif
 
     String &Flag::getValue() const
     {
@@ -39,6 +42,21 @@ namespace makegen
     void Flag::setValue(String &&value)
     {
         this->value = std::move(value);
+    }
+
+    bool Flag::match(const String &input)
+    {
+        return key == input;
+    }
+
+    bool Flag::verify() const
+    {
+        return !value.empty();
+    }
+
+    void Flag::encode(File &file)
+    {
+        file << value;
     }
 
     FlagOutputName::FlagOutputName(const String &key, const String &value) : Flag(key, value)
@@ -59,7 +77,7 @@ namespace makegen
         return !value.empty();
     }
 
-    void FlagOutputName::encode(const File &file)
+    void FlagOutputName::encode(File &file)
     {
         // TODO: Do encode logic.
     }

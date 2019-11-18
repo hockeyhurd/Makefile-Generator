@@ -14,7 +14,7 @@ namespace makegen
         return getStringCache().intern(result);
     }
 
-    Option::Option(StringView variable, StringView value) : variable(std::move(variable)), value(std::move(value)), useableVariable(createUsableVariable(this->variable))
+    Option::Option(StringView variable, StringView value, const bool encodable) : variable(std::move(variable)), value(std::move(value)), useableVariable(createUsableVariable(this->variable)), encodable(encodable)
     {
     }
 
@@ -28,13 +28,26 @@ namespace makegen
         return value;
     }
 
+    void Option::setValue(StringView value)
+    {
+        this->value = std::move(value);
+    }
+
     StringView Option::getUseableVariable() const
     {
         return useableVariable;
     }
 
+    bool Option::isEncodable() const
+    {
+        return encodable;
+    }
+
     void Option::encode(File &file, const u32 indentSize)
     {
+        if (!encodable)
+            return;
+
         for (u32 i = 0; i < indentSize; ++i)
         {
             file.tab();
@@ -67,6 +80,16 @@ namespace makegen
         return *this;
     }
 
+    bool BuildOptions::empty() const
+    {
+        return options.empty();
+    }
+
+    BuildOptions::OptionsList::size_type BuildOptions::size() const
+    {
+        return options.size();
+    }
+
     StringView BuildOptions::getBuildConfig()
     {
         if (config == nullptr)
@@ -97,6 +120,36 @@ namespace makegen
     void BuildOptions::addOption(Option &&option)
     {
         options.emplace_back(std::move(option));
+    }
+
+    void BuildOptions::addOptionFront(const Option &option)
+    {
+        options.insert(options.begin(), option);
+    }
+
+    void BuildOptions::addOptionFront(Option &&option)
+    {
+        options.emplace(options.begin(), std::move(option));
+    }
+
+    BuildOptions::OptionsList::iterator BuildOptions::findOption(StringView name)
+    {
+        auto theEnd = options.end();
+
+        for (auto iter = options.begin(); iter != theEnd; ++iter)
+        {
+            if (iter->getValue() == name)
+            {
+                return iter;
+            }
+        }
+
+        return theEnd;
+    }
+
+    void BuildOptions::removeOption(BuildOptions::OptionsList::iterator iter)
+    {
+        options.erase(iter);
     }
 
     void BuildOptions::encode(File &file, const u32 indentSize)

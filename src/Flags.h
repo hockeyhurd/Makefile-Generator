@@ -4,10 +4,11 @@
 #define MAKEGEN_FLAGS_H
 
 #include "MakeGen.h"
-#include "File.h"
 
 namespace makegen
 {
+
+    class File;
 
     class Flag
     {
@@ -24,21 +25,21 @@ namespace makegen
         virtual ~Flag() = default;
 
         String &getKey() const;
-        void setKey(const String &key);
-        void setKey(String &&key);
+        // void setKey(const String &key);
+        // void setKey(String &&key);
 
         String &getValue() const;
         void setValue(const String &value);
         void setValue(String &&value);
 
         // Override this to implement matching input parsed.
-        virtual bool match(const String &input) = 0;
+        virtual bool match(const String &input);
 
         // Override this to verify key-value pairs.
-        virtual bool verify() const = 0;
+        virtual bool verify() const;
 
         // Override this for encoding.
-        virtual void encode(const File &file) = 0;
+        virtual void encode(File &file);
 
     };
 
@@ -53,7 +54,7 @@ namespace makegen
 
         bool match(const String &input) override;
         bool verify() const override;
-        void encode(const File &file) override;
+        void encode(File &file) override;
 
     };
 

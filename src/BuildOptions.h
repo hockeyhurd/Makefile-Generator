@@ -19,10 +19,11 @@ namespace makegen
         StringView variable;
         StringView value;
         StringView useableVariable;
+        bool encodable;
 
     public:
 
-        Option(StringView variable, StringView value);
+        Option(StringView variable, StringView value, const bool encodable = true);
         Option(const Option &) = default;
         Option(Option &&) = default;
         virtual ~Option() = default;
@@ -32,7 +33,10 @@ namespace makegen
 
         StringView getVariable() const;
         StringView getValue() const;
+        void setValue(StringView value);
         StringView getUseableVariable() const;
+
+        bool isEncodable() const;
 
         void encode(File &file, const u32 indentSize = 0);
 
@@ -58,10 +62,29 @@ namespace makegen
         BuildOptions &operator= (const BuildOptions &);
         BuildOptions &operator= (BuildOptions &&) = default;
 
+        bool empty() const;
+        OptionsList::size_type size() const;
+
         StringView getBuildConfig();
 
         void addOption(const Option &option);
         void addOption(Option &&option);
+
+        void addOptionFront(const Option &option);
+        void addOptionFront(Option &&option);
+
+        inline auto begin() const
+        {
+            return options.begin();
+        }
+
+        inline auto end() const
+        {
+            return options.end();
+        }
+
+        OptionsList::iterator findOption(StringView name);
+        void removeOption(OptionsList::iterator iter);
 
         void encode(File &file, const u32 indentSize = 0);
 

@@ -38,6 +38,12 @@ namespace makegen
         const String &str() const;
         const char *c_str() const;
 
+        bool operator== (const StringView &other);
+        bool operator== (StringView &&other);
+
+        bool operator!= (const StringView &other);
+        bool operator!= (StringView &&other);
+
     };
 
     class StringCache

@@ -17,6 +17,26 @@ namespace makegen
         return string->c_str();
     }
 
+    bool StringView::operator== (const StringView &other)
+    {
+        return string == other.string;
+    }
+
+    bool StringView::operator== (StringView &&other)
+    {
+        return *this == std::ref(other);
+    }
+
+    bool StringView::operator!= (const StringView &other)
+    {
+        return !(*this == other);
+    }
+
+    bool StringView::operator!= (StringView &&other)
+    {
+        return *this != std::ref(other);
+    }
+
     bool StringCache::find(const String &string)
     {
         return set.find(string) != set.end();

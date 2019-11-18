@@ -38,7 +38,7 @@ namespace makegen
         // void addDependency(String &&dependency);
         void addDependency(StringView dependency);
 
-        virtual void build(File &file, std::initializer_list<BuildOptions> buildOptions = {});
+        virtual void build(File &file, BuildOptions *buildOptions);
 
     };
     
@@ -49,7 +49,7 @@ namespace makegen
         AllTarget(StringView name);
         ~AllTarget() = default;
 
-        void build(File &file, std::initializer_list<BuildOptions> buildOptions = {}) override;
+        void build(File &file, BuildOptions *buildOptions) override;
     };
 
     class CleanTarget : public Target
@@ -59,7 +59,7 @@ namespace makegen
         CleanTarget(StringView name);
         ~CleanTarget() = default;
 
-        void build(File &file, std::initializer_list<BuildOptions> buildOptions = {}) override;
+        void build(File &file, BuildOptions *buildOptions) override;
     };
 
 #if 0
