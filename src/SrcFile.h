@@ -9,7 +9,7 @@
 namespace makegen
 {
 
-    class File;
+    class FileWriter;
 
     class SrcFile
     {
@@ -26,8 +26,8 @@ namespace makegen
         StringView getName(bool &result);
         // StringView getExtension();
 
-        void encode(File &file);
-        void encode(File &file, StringView extension);
+        void encode(FileWriter &file);
+        void encode(FileWriter &file, StringView extension);
     };
 
 }

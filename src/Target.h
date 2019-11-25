@@ -3,7 +3,7 @@
 
 #include "MakeGen.h"
 #include "BuildOptions.h"
-#include "File.h"
+#include "FileWriter.h"
 #include "StringCache.h"
 
 #include <vector>
@@ -38,7 +38,7 @@ namespace makegen
         // void addDependency(String &&dependency);
         void addDependency(StringView dependency);
 
-        virtual void build(File &file, BuildOptions *buildOptions);
+        virtual void build(FileWriter &file, BuildOptions *buildOptions);
 
     };
     
@@ -49,7 +49,7 @@ namespace makegen
         AllTarget(StringView name);
         ~AllTarget() = default;
 
-        void build(File &file, BuildOptions *buildOptions) override;
+        void build(FileWriter &file, BuildOptions *buildOptions) override;
     };
 
     class CleanTarget : public Target
@@ -59,7 +59,7 @@ namespace makegen
         CleanTarget(StringView name);
         ~CleanTarget() = default;
 
-        void build(File &file, BuildOptions *buildOptions) override;
+        void build(FileWriter &file, BuildOptions *buildOptions) override;
     };
 
 #if 0
@@ -72,7 +72,7 @@ namespace makegen
         LinkTarget(StringView name);
         ~LinkTarget() = default;
 
-        void build(File &file, std::initializer_list<BuildOptions> buildOptions) override;
+        void build(FileWriter &file, std::initializer_list<BuildOptions> buildOptions) override;
     };
 #endif
 

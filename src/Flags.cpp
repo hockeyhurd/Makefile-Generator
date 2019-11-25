@@ -1,5 +1,5 @@
 #include "Flags.h"
-#include "File.h"
+#include "FileWriter.h"
 
 namespace makegen
 {
@@ -54,7 +54,7 @@ namespace makegen
         return !value.empty();
     }
 
-    void Flag::encode(File &file)
+    void Flag::encode(FileWriter &file)
     {
         file << value;
     }
@@ -77,7 +77,7 @@ namespace makegen
         return !value.empty();
     }
 
-    void FlagOutputName::encode(File &file)
+    void FlagOutputName::encode(FileWriter &file)
     {
         // TODO: Do encode logic.
     }

@@ -3,7 +3,7 @@
 #ifndef MAKEGEN_BUILDOPTIONS_H
 #define MAKEGEN_BUILDOPTIONS_H
 
-#include "File.h"
+#include "FileWriter.h"
 #include "StringCache.h"
 
 #include <memory>
@@ -38,7 +38,7 @@ namespace makegen
 
         bool isEncodable() const;
 
-        void encode(File &file, const u32 indentSize = 0);
+        void encode(FileWriter &file, const u32 indentSize = 0);
 
     };
 
@@ -86,7 +86,7 @@ namespace makegen
         OptionsList::iterator findOption(StringView name);
         void removeOption(OptionsList::iterator iter);
 
-        void encode(File &file, const u32 indentSize = 0);
+        void encode(FileWriter &file, const u32 indentSize = 0);
 
     };
 

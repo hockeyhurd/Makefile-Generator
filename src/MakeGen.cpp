@@ -39,7 +39,7 @@ s32 main(s32 argc, char **argv)
     if (argc == 1)
     {
         const String path = "FakeMakefile";
-        File file(path);
+        FileWriter file(path);
 
         // Configure build options:
 

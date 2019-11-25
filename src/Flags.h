@@ -8,7 +8,7 @@
 namespace makegen
 {
 
-    class File;
+    class FileWriter;
 
     class Flag
     {
@@ -39,7 +39,7 @@ namespace makegen
         virtual bool verify() const;
 
         // Override this for encoding.
-        virtual void encode(File &file);
+        virtual void encode(FileWriter &file);
 
     };
 
@@ -54,7 +54,7 @@ namespace makegen
 
         bool match(const String &input) override;
         bool verify() const override;
-        void encode(File &file) override;
+        void encode(FileWriter &file) override;
 
     };
 

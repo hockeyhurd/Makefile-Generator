@@ -43,7 +43,7 @@ namespace makegen
         return encodable;
     }
 
-    void Option::encode(File &file, const u32 indentSize)
+    void Option::encode(FileWriter &file, const u32 indentSize)
     {
         if (!encodable)
             return;
@@ -152,7 +152,7 @@ namespace makegen
         options.erase(iter);
     }
 
-    void BuildOptions::encode(File &file, const u32 indentSize)
+    void BuildOptions::encode(FileWriter &file, const u32 indentSize)
     {
 #if 0
         file << variable.str();

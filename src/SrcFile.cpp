@@ -1,5 +1,5 @@
 #include "SrcFile.h"
-#include "File.h"
+#include "FileWriter.h"
 
 #include <iostream>
 
@@ -33,12 +33,12 @@ namespace makegen
         return getStringCache().intern(std::move(name));
     }
 
-    void SrcFile::encode(File &file)
+    void SrcFile::encode(FileWriter &file)
     {
         file << this->file.str();
     }
 
-    void SrcFile::encode(File &file, StringView extension)
+    void SrcFile::encode(FileWriter &file, StringView extension)
     {
         bool result = false;
         auto name = getName(result);

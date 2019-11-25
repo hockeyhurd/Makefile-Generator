@@ -17,7 +17,7 @@ namespace makegen
         dependencies.emplace_back(std::move(dependency));
     }
 
-    void Target::build(File &file, BuildOptions *buildOptions)
+    void Target::build(FileWriter &file, BuildOptions *buildOptions)
     {
         file << name.str();
         file << ':';
@@ -60,7 +60,7 @@ namespace makegen
     {
     }
 
-    void AllTarget::build(File &file, BuildOptions *buildOptions)
+    void AllTarget::build(FileWriter &file, BuildOptions *buildOptions)
     {
         file << name.str();
         file << ':';
@@ -78,7 +78,7 @@ namespace makegen
     {
     }
 
-    void CleanTarget::build(File &file, BuildOptions *buildOptions)
+    void CleanTarget::build(FileWriter &file, BuildOptions *buildOptions)
     {
         file << name.str();
         file << ':';

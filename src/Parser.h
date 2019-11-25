@@ -20,7 +20,7 @@ namespace makegen
 {
 
     class Configuration;
-    class File;
+    class FileWriter;
 
     typedef bool (*ParseFunctor)(Configuration &, const char **, const s32, s32 &);
 

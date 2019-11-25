@@ -303,7 +303,7 @@ namespace makegen
     {
         static auto &cache = getStringCache();
 
-        File file(fileName);
+        FileWriter file(fileName);
 
         // Encode all options
         compileOptions.encode(file);
