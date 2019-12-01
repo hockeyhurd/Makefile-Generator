@@ -1,5 +1,7 @@
 #include "StringCache.h"
 
+#include <functional>
+
 namespace makegen
 {
     // /* static */ const StringView StringView::EMPTY(nullptr);

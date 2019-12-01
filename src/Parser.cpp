@@ -2,6 +2,7 @@
 #include "Target.h"
 
 #include <iostream>
+#include <cstring>
 
 namespace makegen
 {
