@@ -1,6 +1,7 @@
 #include "StringCache.h"
 
 #include <functional>
+#include <iostream>
 
 namespace makegen
 {
@@ -82,10 +83,22 @@ namespace makegen
 
         else
         {
+#if 0
             iter = set.emplace_hint(iter, std::move(string));
 
             const String &str = *iter;
             return StringView(&const_cast<String&>(str));
+#else
+            auto result = set.emplace(std::move(string));
+
+            if (!result.second)
+            {
+                std::cout << "ERROR: Failed to cache string\n";
+                exit(EXIT_FAILURE);
+            }
+
+            return StringView(&const_cast<String &>(*result.first));
+#endif
         }
     }
 

@@ -54,14 +54,6 @@ namespace makegen
             config.setOutputName(nextArg);
 
             static auto &cache = getStringCache();
-#if 0
-            Option linkOption(cache.intern(outputNameFlag), cache.intern(outputNameFlag), false);
-            Option nameOption(cache.intern("NAME"), cache.intern(nextArg));
-
-            auto &linkOptions = config.getLinkOptions();
-            linkOptions.addOption(std::move(linkOption));
-            linkOptions.addOption(std::move(nameOption));
-#else
             auto &linkOptions = config.getLinkOptions();
             Option nameOption(cache.intern("NAME"), cache.intern(nextArg));
             linkOptions.addOption(std::move(nameOption));
@@ -78,12 +70,10 @@ namespace makegen
 
             else
             {
-                Option newLinkOption = *findResult;
-                String newValue = findResult->getVariable().str() + " -o";
+                Option &newLinkOption = *findResult;
+                String newValue = findResult->getValue().str() + " -o";
                 newLinkOption.setValue(cache.intern(newValue));
-                linkOptions.removeOption(findResult);
             }
-#endif
 
             return true;
         }

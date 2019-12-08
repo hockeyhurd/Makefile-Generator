@@ -1,5 +1,7 @@
 #include "BuildOptions.h"
 
+// #include <iostream>
+
 namespace makegen
 {
 
@@ -138,7 +140,8 @@ namespace makegen
 
         for (auto iter = options.begin(); iter != theEnd; ++iter)
         {
-            if (iter->getValue() == name)
+            // std::cout << iter->getVariable().str() << std::endl;
+            if (iter->getVariable() == name)
             {
                 return iter;
             }
