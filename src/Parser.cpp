@@ -275,6 +275,12 @@ namespace makegen
         return true;
     }
 
+    bool Configuration::parse(const String &input)
+    {
+        // TODO: Parse input
+        return false;
+    }
+
     bool Configuration::verify()
     {
         if (compileOptions.empty())

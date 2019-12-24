@@ -69,6 +69,7 @@ namespace makegen
         void addSrcFile(SrcFile &&file);
 
         bool parse(const char **argv, const s32 argc);
+        bool parse(const String &input);
 
         bool verify();
         void build();

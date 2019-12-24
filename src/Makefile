@@ -21,7 +21,7 @@ ifndef CC
 	CC=$(GCC)
 endif
 
-all: link MakeGen.o BuildOptions.o Flags.o FileWriter.o Parser.o SrcFile.o Target.o StringCache.o
+all: link MakeGen.o BuildOptions.o Flags.o FileReader.o FileWriter.o InputFile.o Parser.o SrcFile.o Target.o StringCache.o
 
 MakeGen.o: MakeGen.cpp
 	$(CC) $(CC_FLAGS) -c MakeGen.cpp
@@ -31,8 +31,14 @@ BuildOptions.o: BuildOptions.cpp
 Flags.o: Flags.cpp
 	$(CC) $(CC_FLAGS) -c Flags.cpp
 
+FileReader.o: FileReader.cpp
+	$(CC) $(CC_FLAGS) -c FileReader.cpp
+
 FileWriter.o: FileWriter.cpp
 	$(CC) $(CC_FLAGS) -c FileWriter.cpp
+
+InputFile.o: InputFile.cpp
+	$(CC) $(CC_FLAGS) -c InputFile.cpp
 
 Parser.o: Parser.cpp
 	$(CC) $(CC_FLAGS) -c Parser.cpp
@@ -46,8 +52,8 @@ Target.o: Target.cpp
 StringCache.o: StringCache.cpp
 	$(CC) $(CC_FLAGS) -c StringCache.cpp
 
-link: MakeGen.o BuildOptions.o Flags.o FileWriter.o Parser.o SrcFile.o Target.o StringCache.o
-	$(CC) $(LD_FLAGS) -o $(NAME) MakeGen.o BuildOptions.o Flags.o FileWriter.o Parser.o SrcFile.o Target.o StringCache.o
+link: MakeGen.o BuildOptions.o Flags.o FileReader.o FileWriter.o InputFile.o Parser.o SrcFile.o Target.o StringCache.o
+	$(CC) $(LD_FLAGS) -o $(NAME) MakeGen.o BuildOptions.o Flags.o FileReader.o FileWriter.o InputFile.o Parser.o SrcFile.o Target.o StringCache.o
 
 clean:
 	$(RM) -f *.o $(NAME)
